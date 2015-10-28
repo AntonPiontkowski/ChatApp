@@ -28,14 +28,7 @@ public class Connection {
             this.type = t;
         }
     }
-    public static enum CommandType{
-        ACCEPT,DISCONNECT,MESSAGE,NICK,REJECT;
+    public class CommandType{
 
-        public static CommandType valueOf(String name){
-
-        }
-        public static CommandType[] values(){
-
-        }
     }
 }
