@@ -7,6 +7,8 @@ public class Connection {
     private Scanner scanner;
     private Socket socket;
 
+    String testCommit;
+    
     public Connection(Socket s){
         this.socket  = s;
     }
