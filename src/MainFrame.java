@@ -7,8 +7,16 @@ import java.io.File;
 import java.io.IOException;
 
 public class MainFrame extends JFrame {
+    /**
+     * Объекты Connection & Caller для
+     * возможности воздействия на них
+     * с помощью кнопок на фрейме
+     */
+    Connection connection;
+    Caller caller;
     public MainFrame()  {
-        setSize(900,600);
+        setSize(600,400);
+        getContentPane().setBackground(Color.WHITE);
         setLocation(220,100);
         setTitle("ChatApp 2015");
         setResizable(false);
