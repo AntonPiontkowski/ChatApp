@@ -16,7 +16,6 @@ public class Caller {
         this.localNick = localNick;
     }
 
-
     // public Connection call(){}
     public String getLocalNick(){
         return this.localNick;
@@ -33,6 +32,11 @@ public class Caller {
     public void setRemoteAddress(SocketAddress remoteAddress){
         this.remoteAddress = remoteAddress;
     }
+    public static void main(String[] args){}
+
     public enum CallStatus{
+        BUSY,NOT_ACCESIBLE,OK,REJECTED;
     }
+
+
 }
