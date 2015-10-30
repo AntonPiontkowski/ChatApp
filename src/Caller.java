@@ -8,8 +8,14 @@ public class Caller {
     private CallStatus status;
 
     public Caller(){}
-    public Caller(String localNick,SocketAddress remoteAddress){}
-    public Caller(String localNick,String ip){}
+    public Caller(String localNick,SocketAddress remoteAddress){
+        this.localNick = localNick;
+        this.remoteAddress = remoteAddress;
+    }
+    public Caller(String localNick,String ip){
+        this.localNick = localNick;
+    }
+
 
     // public Connection call(){}
     public String getLocalNick(){
@@ -28,6 +34,5 @@ public class Caller {
         this.remoteAddress = remoteAddress;
     }
     public enum CallStatus{
-
     }
 }
