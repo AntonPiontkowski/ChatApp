@@ -1,9 +1,299 @@
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
-public class MainForm {
-    public static void main(String[] args){
-        MainFrame mainFrame = new MainFrame();
-        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setVisible(true);
+public class MainForm extends JFrame {
+    private int xMouse;
+    private int yMouse;
+    public MainForm() {
+        setBounds(200, 100, 700, 400);
+        setUndecorated(true);
+        setLayout(null);
+        setIconImage(new ImageIcon("icon.png").getImage());
+        final JLabel close = new JLabel("");
+        close.setIcon(new ImageIcon("gui/close.png"));
+        close.setBounds(673, 7, 15, 15);
+        close.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.exit(0);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                close.setIcon(new ImageIcon("gui/closePressed.png"));
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                close.setIcon(new ImageIcon("gui/close.png"));
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                close.setIcon(new ImageIcon("gui/closeEntered.png"));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                close.setIcon(new ImageIcon("gui/close.png"));
+            }
+        });
+        add(close);
+        final JLabel tray = new JLabel("");
+        tray.setIcon(new ImageIcon("gui/tray.png"));
+        tray.setBounds(653, 7, 15, 15);
+        tray.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                setState(ICONIFIED);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                tray.setIcon(new ImageIcon("gui/trayPressed.png"));
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                tray.setIcon(new ImageIcon("gui/tray.png"));
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                tray.setIcon(new ImageIcon("gui/trayEntered.png"));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                tray.setIcon(new ImageIcon("gui/tray.png"));
+            }
+        });
+        add(tray);
+        final JLabel bar = new JLabel("");
+        bar.setBounds(0, 0, 700, 31);
+        bar.setIcon(new ImageIcon("gui/bar.png"));
+        this.addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+                bar.setIcon(new ImageIcon("gui/bar.png"));
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+                bar.setIcon(new ImageIcon("gui/barOff.png"));
+            }
+        });
+        bar.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                xMouse = e.getX();
+                yMouse = e.getY();
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+        bar.addMouseMotionListener(new MouseMotionListener() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                int x = e.getXOnScreen();
+                int y = e.getYOnScreen();
+                setLocation(x - xMouse, y - yMouse);
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+            }
+        });
+        add(bar);
+        final JLabel connect = new JLabel("");
+        connect.setBounds(476, 252, 93, 33);
+        connect.setIcon(new ImageIcon("gui/connectBtn.png"));
+        connect.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // Что произойдет если нажать connect
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                connect.setIcon(new ImageIcon("gui/connectBtnPressed.png"));
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                connect.setIcon(new ImageIcon("gui/connectBtn.png"));
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                connect.setIcon(new ImageIcon("gui/connectBtnEntered.png"));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                connect.setIcon(new ImageIcon("gui/connectBtn.png"));
+            }
+        });
+        add(connect);
+        final JLabel disconnect = new JLabel("");
+        disconnect.setBounds(589, 252, 93, 33);
+        disconnect.setIcon(new ImageIcon("gui/disconnectBtn.png"));
+        disconnect.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // Что произойдет если нажать disconnect
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                disconnect.setIcon(new ImageIcon("gui/disconnectBtnPressed.png"));
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                disconnect.setIcon(new ImageIcon("gui/disconnectBtn.png"));
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                disconnect.setIcon(new ImageIcon("gui/disconnectBtnEntered.png"));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                disconnect.setIcon(new ImageIcon("gui/disconnectBtn.png"));
+            }
+        });
+        add(disconnect);
+        final JLabel apply = new JLabel("");
+        apply.setBounds(624, 83, 57, 24);
+        apply.setIcon(new ImageIcon("gui/applyBtn.png"));
+        apply.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // Что произойдет если нажать apply
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                apply.setIcon(new ImageIcon("gui/applyBtnPressed.png"));
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                apply.setIcon(new ImageIcon("gui/applyBtn.png"));
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                apply.setIcon(new ImageIcon("gui/applyBtnEntered.png"));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                apply.setIcon(new ImageIcon("gui/applyBtn.png"));
+            }
+        });
+        add(apply);
+        JTextArea localNickText = new JTextArea();
+        localNickText.setBounds(480, 86, 130, 20);
+        add(localNickText);
+        JTextArea remoteAddressText = new JTextArea();
+        remoteAddressText.setBounds(480,215,197,20);
+        add(remoteAddressText);
+        JTextArea remoteNickText = new JTextArea();
+        remoteNickText.setBounds(480,305,197,20);
+        add(remoteNickText);
+        JLabel fieldsBG = new JLabel("");
+        fieldsBG.setBounds(0, 0, 700, 400);
+        fieldsBG.setIcon(new ImageIcon("gui/fieldsBG.png"));
+        add(fieldsBG);
+        JTextArea newMsg = new JTextArea();
+        newMsg.setBackground(Color.GRAY);
+        newMsg.setForeground(Color.ORANGE);
+        newMsg.setBounds(70, 356, 367, 20);
+        add(newMsg);
+        final JLabel send = new JLabel("");
+        send.setBounds(10, 335, 58, 58);
+        send.setIcon(new ImageIcon("gui/sendBtn.png"));
+        send.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // Что произойдет если нажать кнопку send
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                send.setIcon(new ImageIcon("gui/sendBtnPressed.png"));
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                send.setIcon(new ImageIcon("gui/sendBtn.png"));
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                send.setIcon(new ImageIcon("gui/sendBtnEntered.png"));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                send.setIcon(new ImageIcon("gui/sendBtn.png"));
+            }
+        });
+        add(send);
+        JLabel messagingBG = new JLabel("");
+        messagingBG.setBounds(25,55,416,322);
+        messagingBG.setIcon(new ImageIcon("gui/messagingBG.png"));
+        add(messagingBG);
+        JLabel background = new JLabel("");
+        background.setBounds(0, 0, 700, 400);
+        background.setIcon(new ImageIcon("gui/background.png"));
+        add(background);
     }
+    public static void main(String[] args){
+        try{
+            Thread.sleep(2000);
+        } catch (InterruptedException e ){}
+        MainForm mainForm = new MainForm();
+        mainForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainForm.setVisible(true);
+    }
+
 }
