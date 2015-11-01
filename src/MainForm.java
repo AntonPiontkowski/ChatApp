@@ -320,14 +320,14 @@ public class MainForm extends JFrame {
         add(fieldsBG);
 
         newMsg = new JTextArea("");
-        newMsg.setEnabled(false);
+        newMsg.setEnabled(true);
         newMsg.setBackground(Color.GRAY);
         newMsg.setForeground(Color.ORANGE);
         newMsg.setBounds(70, 356, 367, 20);
         add(newMsg);
 
         send = new JLabel("");
-        send.setEnabled(false);
+        send.setEnabled(true);
         send.setBounds(10, 335, 58, 58);
         send.setIcon(new ImageIcon("gui/sendBtn.png"));
         send.addMouseListener(new MouseListener() {
@@ -361,10 +361,10 @@ public class MainForm extends JFrame {
         });
         add(send);
 
-        //JLabel messagingBG = new JLabel("");
-        //messagingBG.setBounds(25,55,416,322);
-        //messagingBG.setIcon(new ImageIcon("gui/messagingBG.png"));
-        //add(messagingBG);
+        JLabel messagingBG = new JLabel("");
+        messagingBG.setBounds(25,55,416,322);
+        messagingBG.setIcon(new ImageIcon("gui/messagingBG.png"));
+        add(messagingBG);
 
         listModel = new DefaultListModel();
         JList massageDisplay = new JList(listModel);
@@ -378,6 +378,12 @@ public class MainForm extends JFrame {
         background.setBounds(0, 0, 700, 400);
         background.setIcon(new ImageIcon("gui/background.png"));
         add(background);
+
+        connect.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        disconnect.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        apply.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        send.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
     }
     public static void main(String[] args){
         try{
@@ -387,5 +393,4 @@ public class MainForm extends JFrame {
         mainForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainForm.setVisible(true);
     }
-
 }

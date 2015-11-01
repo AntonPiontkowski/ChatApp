@@ -3,7 +3,7 @@ public class Command{
     public Command(CommandType t){
         this.type = t;
     }
-public enum CommandType{
+    public enum CommandType{
     ACCEPT,DISCONNECT,MESSAGE,NICK,REJECT;
 }
 }
