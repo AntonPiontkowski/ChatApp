@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -9,12 +10,27 @@ public class MainForm extends JFrame {
     Connection connection;
     private int xMouse;
     private int yMouse;
+
+    final JLabel close;
+    final JLabel tray;
+    final JLabel bar;
+    final JTextArea localNickText;
+    final JLabel disconnect;
+    final JTextArea remoteAddressText;
+    final JLabel connect;
+    final JLabel apply;
+    final JTextArea newMsg;
+    final JLabel send;
+
+    DefaultListModel listModel;
+    JTextArea massageDisplay;
+
     public MainForm() {
         setBounds(200, 100, 700, 400);
         setUndecorated(true);
         setLayout(null);
         setIconImage(new ImageIcon("icon.png").getImage());
-        final JLabel close = new JLabel("");
+        close = new JLabel("");
         close.setIcon(new ImageIcon("gui/close.png"));
         close.setBounds(673, 7, 15, 15);
         close.addMouseListener(new MouseListener() {
@@ -44,7 +60,8 @@ public class MainForm extends JFrame {
             }
         });
         add(close);
-        final JLabel tray = new JLabel("");
+
+        tray = new JLabel("");
         tray.setIcon(new ImageIcon("gui/tray.png"));
         tray.setBounds(653, 7, 15, 15);
         tray.addMouseListener(new MouseListener() {
@@ -74,7 +91,8 @@ public class MainForm extends JFrame {
             }
         });
         add(tray);
-        final JLabel bar = new JLabel("");
+
+        bar = new JLabel("");
         bar.setBounds(0, 0, 700, 31);
         bar.setIcon(new ImageIcon("gui/bar.png"));
         this.addWindowListener(new WindowListener() {
@@ -144,22 +162,37 @@ public class MainForm extends JFrame {
             }
         });
         add(bar);
-        final JTextArea localNickText = new JTextArea();
+
+        localNickText = new JTextArea();
         localNickText.setBounds(480, 86, 130, 20);
         add(localNickText);
+
         JTextArea remoteNickText = new JTextArea();
         remoteNickText.setEditable(false);
         remoteNickText.setEnabled(false);
         remoteNickText.setBounds(480, 305, 197, 20);
         add(remoteNickText);
-        final JLabel disconnect = new JLabel("");
+
+        disconnect = new JLabel("");
         disconnect.setEnabled(false);
         disconnect.setBounds(589, 252, 93, 33);
         disconnect.setIcon(new ImageIcon("gui/disconnectBtn.png"));
         disconnect.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // Что произойдет если нажать disconnect
+                // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ disconnect
+                try{
+                    //connection.disconnect();
+                    connection.close();
+                }catch (IOException ex){}
+
+                disconnect.setEnabled(false);
+                connect.setEnabled(true);
+                //apply.setEnabled(true);
+                //localNickText.setEnabled(true);
+                remoteAddressText.setEnabled(true);
+                send.setEnabled(false);
+                newMsg.setEnabled(false);
             }
 
             @Override
@@ -183,29 +216,36 @@ public class MainForm extends JFrame {
             }
         });
         add(disconnect);
-        final JTextArea remoteAddressText = new JTextArea();
+
+        remoteAddressText = new JTextArea();
         remoteAddressText.setEnabled(false);
         remoteAddressText.setBounds(480, 215, 197, 20);
         add(remoteAddressText);
-        final JLabel connect = new JLabel("");
+
+        connect = new JLabel("");
         connect.setEnabled(false);
         connect.setBounds(476, 252, 93, 33);
         connect.setIcon(new ImageIcon("gui/connectBtn.png"));
         connect.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // Что произойдет если нажать connect
-                if (remoteAddressText.getText() == "") return;
+                // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ connect
+                if (remoteAddressText.getText().equals("")){
+                    return;
+                    //connection error
+                }
                 else {
                     connect.setEnabled(false);
                     remoteAddressText.setEnabled(false);
                     /**
-                     * Для теста
+                     * пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
                      */
+                    newMsg.setEnabled(true);
+                    send.setEnabled(true);
                     disconnect.setEnabled(true);
                     remoteAddressText.setEnabled(true);
                     try {
-                        Socket s = new Socket(InetAddress.getByName("10.133.139.100"), 28411);
+                        Socket s = new Socket(remoteAddressText.getText(), 28411);
                         connection = new Connection(s);
                         connection.sendNickHello("2015", localNickText.getText());
                     } catch (Exception ex) {
@@ -235,14 +275,15 @@ public class MainForm extends JFrame {
             }
         });
         add(connect);
-        final JLabel apply = new JLabel("");
+
+        apply = new JLabel("");
         apply.setBounds(624, 83, 57, 24);
         apply.setIcon(new ImageIcon("gui/applyBtn.png"));
         apply.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // Что произойдет если нажать apply
-                if (localNickText.getText() != "") {
+                // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ apply
+                if (localNickText.getText().equals("")) {
                     localNickText.setText("unnamed");
                 }
                 apply.setEnabled(false);
@@ -277,19 +318,24 @@ public class MainForm extends JFrame {
         fieldsBG.setBounds(0, 0, 700, 400);
         fieldsBG.setIcon(new ImageIcon("gui/fieldsBG.png"));
         add(fieldsBG);
-        final JTextArea newMsg = new JTextArea("");
+
+        newMsg = new JTextArea("");
+        newMsg.setEnabled(false);
         newMsg.setBackground(Color.GRAY);
         newMsg.setForeground(Color.ORANGE);
         newMsg.setBounds(70, 356, 367, 20);
         add(newMsg);
-        final JLabel send = new JLabel("");
+
+        send = new JLabel("");
+        send.setEnabled(false);
         send.setBounds(10, 335, 58, 58);
         send.setIcon(new ImageIcon("gui/sendBtn.png"));
         send.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // Что произойдет если нажать кнопку send
+                // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ send
                 connection.sendMessage(newMsg.getText());
+                listModel.addElement(localNickText.getText() + ":" + newMsg.getText() + "\n");
                 newMsg.setText("");
             }
 
@@ -314,10 +360,20 @@ public class MainForm extends JFrame {
             }
         });
         add(send);
-        JLabel messagingBG = new JLabel("");
-        messagingBG.setBounds(25,55,416,322);
-        messagingBG.setIcon(new ImageIcon("gui/messagingBG.png"));
-        add(messagingBG);
+
+        //JLabel messagingBG = new JLabel("");
+        //messagingBG.setBounds(25,55,416,322);
+        //messagingBG.setIcon(new ImageIcon("gui/messagingBG.png"));
+        //add(messagingBG);
+
+        listModel = new DefaultListModel();
+        JList massageDisplay = new JList(listModel);
+        JScrollPane pane = new JScrollPane(massageDisplay);
+        pane.setBounds(25, 55, 412, 301);
+        pane.setFocusable(false);
+        massageDisplay.setEnabled(false);
+        add(pane);
+
         JLabel background = new JLabel("");
         background.setBounds(0, 0, 700, 400);
         background.setIcon(new ImageIcon("gui/background.png"));
