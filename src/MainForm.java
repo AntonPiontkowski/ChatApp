@@ -1,8 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.net.InetAddress;
+import java.net.Socket;
 
 public class MainForm extends JFrame {
+    Caller caller;
+    Connection connection;
     private int xMouse;
     private int yMouse;
     public MainForm() {
@@ -140,37 +144,16 @@ public class MainForm extends JFrame {
             }
         });
         add(bar);
-        final JLabel connect = new JLabel("");
-        connect.setBounds(476, 252, 93, 33);
-        connect.setIcon(new ImageIcon("gui/connectBtn.png"));
-        connect.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                // Что произойдет если нажать connect
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                connect.setIcon(new ImageIcon("gui/connectBtnPressed.png"));
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                connect.setIcon(new ImageIcon("gui/connectBtn.png"));
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                connect.setIcon(new ImageIcon("gui/connectBtnEntered.png"));
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                connect.setIcon(new ImageIcon("gui/connectBtn.png"));
-            }
-        });
-        add(connect);
+        final JTextArea localNickText = new JTextArea();
+        localNickText.setBounds(480, 86, 130, 20);
+        add(localNickText);
+        JTextArea remoteNickText = new JTextArea();
+        remoteNickText.setEditable(false);
+        remoteNickText.setEnabled(false);
+        remoteNickText.setBounds(480, 305, 197, 20);
+        add(remoteNickText);
         final JLabel disconnect = new JLabel("");
+        disconnect.setEnabled(false);
         disconnect.setBounds(589, 252, 93, 33);
         disconnect.setIcon(new ImageIcon("gui/disconnectBtn.png"));
         disconnect.addMouseListener(new MouseListener() {
@@ -200,6 +183,58 @@ public class MainForm extends JFrame {
             }
         });
         add(disconnect);
+        final JTextArea remoteAddressText = new JTextArea();
+        remoteAddressText.setEnabled(false);
+        remoteAddressText.setBounds(480, 215, 197, 20);
+        add(remoteAddressText);
+        final JLabel connect = new JLabel("");
+        connect.setEnabled(false);
+        connect.setBounds(476, 252, 93, 33);
+        connect.setIcon(new ImageIcon("gui/connectBtn.png"));
+        connect.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // Что произойдет если нажать connect
+                if (remoteAddressText.getText() == "") return;
+                else {
+                    connect.setEnabled(false);
+                    remoteAddressText.setEnabled(false);
+                    /**
+                     * Для теста
+                     */
+                    disconnect.setEnabled(true);
+                    remoteAddressText.setEnabled(true);
+                    try {
+                        Socket s = new Socket(InetAddress.getByName("10.133.139.100"), 28411);
+                        connection = new Connection(s);
+                        connection.sendNickHello("2015", localNickText.getText());
+                    } catch (Exception ex) {
+                    }
+
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                connect.setIcon(new ImageIcon("gui/connectBtnPressed.png"));
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                connect.setIcon(new ImageIcon("gui/connectBtn.png"));
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                connect.setIcon(new ImageIcon("gui/connectBtnEntered.png"));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                connect.setIcon(new ImageIcon("gui/connectBtn.png"));
+            }
+        });
+        add(connect);
         final JLabel apply = new JLabel("");
         apply.setBounds(624, 83, 57, 24);
         apply.setIcon(new ImageIcon("gui/applyBtn.png"));
@@ -207,6 +242,13 @@ public class MainForm extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 // Что произойдет если нажать apply
+                if (localNickText.getText() != "") {
+                    localNickText.setText("unnamed");
+                }
+                apply.setEnabled(false);
+                localNickText.setEnabled(false);
+                connect.setEnabled(true);
+                remoteAddressText.setEnabled(true);
             }
 
             @Override
@@ -230,20 +272,12 @@ public class MainForm extends JFrame {
             }
         });
         add(apply);
-        JTextArea localNickText = new JTextArea();
-        localNickText.setBounds(480, 86, 130, 20);
-        add(localNickText);
-        JTextArea remoteAddressText = new JTextArea();
-        remoteAddressText.setBounds(480,215,197,20);
-        add(remoteAddressText);
-        JTextArea remoteNickText = new JTextArea();
-        remoteNickText.setBounds(480,305,197,20);
-        add(remoteNickText);
+
         JLabel fieldsBG = new JLabel("");
         fieldsBG.setBounds(0, 0, 700, 400);
         fieldsBG.setIcon(new ImageIcon("gui/fieldsBG.png"));
         add(fieldsBG);
-        JTextArea newMsg = new JTextArea();
+        final JTextArea newMsg = new JTextArea("");
         newMsg.setBackground(Color.GRAY);
         newMsg.setForeground(Color.ORANGE);
         newMsg.setBounds(70, 356, 367, 20);
@@ -255,6 +289,8 @@ public class MainForm extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 // Что произойдет если нажать кнопку send
+                connection.sendMessage(newMsg.getText());
+                newMsg.setText("");
             }
 
             @Override

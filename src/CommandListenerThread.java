@@ -3,7 +3,7 @@ import java.util.Observable;
 public class CommandListenerThread extends Observable implements Runnable {
     private Connection connection;
     private boolean disconnected;
-    private Connection.Command lastCommand;
+    private Command lastCommand;
 
     public CommandListenerThread(){}
     public CommandListenerThread(Connection con){
