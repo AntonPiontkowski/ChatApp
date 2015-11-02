@@ -23,8 +23,6 @@ public class MainForm extends JFrame {
     final JLabel connect;
     final JLabel apply;
     final JTextArea newMsg;
-    final JLabel send;
-
     final JTextArea messagingArea;
 
     public MainForm() {
@@ -94,9 +92,11 @@ public class MainForm extends JFrame {
         });
         add(tray);
 
-        messagingArea = new JTextArea();
+        messagingArea = new JTextArea("");
+        messagingArea.setEditable(false);
         final JScrollPane messagePane = new JScrollPane(messagingArea);
-        messagePane.setBounds(25, 55, 403, 280);
+        messagePane.setVisible(true);
+        messagePane.setBounds(29, 60, 395, 275);
         add(messagePane);
 
         bar = new JLabel("");
@@ -187,18 +187,16 @@ public class MainForm extends JFrame {
         disconnect.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // ��� ���������� ���� ������ disconnect
-                try{
+                try {
                     connection.disconnect();
-                }catch (IOException ex){}
+                } catch (IOException ex) {
+                }
 
                 disconnect.setEnabled(false);
                 connect.setEnabled(true);
-                //apply.setEnabled(true);
-                //localNickText.setEnabled(true);
                 remoteAddressText.setEnabled(true);
-                send.setEnabled(false);
-                newMsg.setEnabled(false);
+                newMsg.setEditable(false);
+                messagingArea.setText("");
             }
 
             @Override
@@ -235,24 +233,20 @@ public class MainForm extends JFrame {
         connect.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // ��� ���������� ���� ������ connect
-                if (remoteAddressText.getText().equals("")){
+                if (remoteAddressText.getText().equals("")) {
                     return;
                     //connection error
-                }
-                else {
+                } else {
                     connect.setEnabled(false);
                     remoteAddressText.setEnabled(false);
-                    /**
-                     * ��� �����
-                     */
-                    newMsg.setEnabled(true);
-                    send.setEnabled(true);
+                    messagingArea.setEditable(true);
+                    newMsg.setEditable(true);
                     disconnect.setEnabled(true);
                     remoteAddressText.setEnabled(true);
                     try {
                         Socket s = new Socket(remoteAddressText.getText(), 28411);
                         connection = new Connection(s);
+                        connection.sendNickHello("ChatApp 2015",localNickText.getText());
                     } catch (Exception ex) {
                     }
 
@@ -287,7 +281,6 @@ public class MainForm extends JFrame {
         apply.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // ��� ���������� ���� ������ apply
                 if (localNickText.getText().equals("")) {
                     localNickText.setText("unnamed");
                 }
@@ -325,10 +318,10 @@ public class MainForm extends JFrame {
         add(fieldsBG);
 
         newMsg = new JTextArea("");
-        newMsg.setEnabled(true);
         newMsg.setBackground(Color.GRAY);
         newMsg.setForeground(Color.ORANGE);
-        newMsg.setBounds(70, 356, 367, 20);
+        newMsg.setBounds(32, 340, 400, 20);
+        newMsg.setEditable(false);
         newMsg.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -336,7 +329,7 @@ public class MainForm extends JFrame {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER){
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     connection.sendMessage(newMsg.getText());
                     messagingArea.append(localNickText.getText() + ":" + newMsg.getText() + "\n");
                 }
@@ -344,50 +337,17 @@ public class MainForm extends JFrame {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER){
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     newMsg.setText("");
                 }
             }
         });
         add(newMsg);
 
-        send = new JLabel("");
-        send.setEnabled(true);
-        send.setBounds(10, 335, 58, 58);
-        send.setIcon(new ImageIcon("gui/sendBtn.png"));
-        send.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                // ��� ���������� ���� ������ ������ send
-                connection.sendMessage(newMsg.getText());
-                messagingArea.append(localNickText.getText() + ": " + newMsg.getText() + "\n");
-                newMsg.setText("");
-            }
 
-            @Override
-            public void mousePressed(MouseEvent e) {
-                send.setIcon(new ImageIcon("gui/sendBtnPressed.png"));
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                send.setIcon(new ImageIcon("gui/sendBtn.png"));
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                send.setIcon(new ImageIcon("gui/sendBtnEntered.png"));
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                send.setIcon(new ImageIcon("gui/sendBtn.png"));
-            }
-        });
-        add(send);
 
         JLabel messagingBG = new JLabel("");
-        messagingBG.setBounds(25,55,416,322);
+        messagingBG.setBounds(25, 55, 416, 322);
         messagingBG.setIcon(new ImageIcon("gui/messagingBG.png"));
         add(messagingBG);
 
@@ -399,7 +359,6 @@ public class MainForm extends JFrame {
         connect.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         disconnect.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         apply.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        send.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
     }
     public static void main(String[] args){
