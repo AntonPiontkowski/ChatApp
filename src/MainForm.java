@@ -1,5 +1,3 @@
-import javafx.scene.input.KeyCharacterCombination;
-
 import javax.swing.*;
 import javax.swing.plaf.ScrollBarUI;
 import java.awt.*;
@@ -172,6 +170,29 @@ public class MainForm extends JFrame {
 
         localNickText = new JTextArea();
         localNickText.setBounds(480, 86, 130, 20);
+        localNickText.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    if (localNickText.getText().equals("")) {
+                        localNickText.setText("unnamed");
+                    }
+                    apply.setEnabled(false);
+                    localNickText.setEnabled(false);
+                    connect.setEnabled(true);
+                    remoteAddressText.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+        });
+
         add(localNickText);
 
         JTextArea remoteNickText = new JTextArea();
@@ -224,6 +245,42 @@ public class MainForm extends JFrame {
         remoteAddressText = new JTextArea();
         remoteAddressText.setEnabled(false);
         remoteAddressText.setBounds(480, 215, 197, 20);
+        remoteAddressText.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    if (remoteAddressText.getText().equals("")) {
+                        return;
+                        // connection error
+                    } else {
+                        connect.setEnabled(false);
+                        remoteAddressText.setEnabled(false);
+                        /**
+                         * ??? ?????
+                         */
+                        newMsg.setEnabled(true);
+                        disconnect.setEnabled(true);
+                        remoteAddressText.setEnabled(true);
+                        try {
+                            Socket s = new Socket(remoteAddressText.getText(), 28411);
+                            connection = new Connection(s);
+                        } catch (Exception ex) {
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
+
         add(remoteAddressText);
 
         connect = new JLabel("");
@@ -233,21 +290,25 @@ public class MainForm extends JFrame {
         connect.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (remoteAddressText.getText().equals("")) {
-                    return;
-                    //connection error
+                if (remoteAddressText.getText().matches("(?i).*[a-zа-я].*")) {
+                    // invalid ip-address
                 } else {
-                    connect.setEnabled(false);
-                    remoteAddressText.setEnabled(false);
-                    messagingArea.setEditable(true);
-                    newMsg.setEditable(true);
-                    disconnect.setEnabled(true);
-                    remoteAddressText.setEnabled(true);
-                    try {
-                        Socket s = new Socket(remoteAddressText.getText(), 28411);
-                        connection = new Connection(s);
-                        connection.sendNickHello("ChatApp 2015",localNickText.getText());
-                    } catch (Exception ex) {
+                    if (remoteAddressText.getText().equals("")) {
+                        return;
+                        // connection error
+                    } else {
+                        connect.setEnabled(false);
+                        remoteAddressText.setEnabled(false);
+                        messagingArea.setEditable(true);
+                        newMsg.setEditable(true);
+                        disconnect.setEnabled(true);
+                        remoteAddressText.setEnabled(true);
+                        try {
+                            Socket s = new Socket(remoteAddressText.getText(), 28411);
+                            connection = new Connection(s);
+                            connection.sendNickHello("ChatApp 2015", localNickText.getText());
+                        } catch (Exception ex) {
+                        }
                     }
 
                 }
@@ -284,10 +345,14 @@ public class MainForm extends JFrame {
                 if (localNickText.getText().equals("")) {
                     localNickText.setText("unnamed");
                 }
-                apply.setEnabled(false);
-                localNickText.setEnabled(false);
-                connect.setEnabled(true);
-                remoteAddressText.setEnabled(true);
+                if (localNickText.getText().length() > 2 && localNickText.getText().length() < 13) {
+                    apply.setEnabled(false);
+                    localNickText.setEnabled(false);
+                    connect.setEnabled(true);
+                    remoteAddressText.setEnabled(true);
+                } else {
+                    // invalid nick length
+                }
             }
 
             @Override
@@ -323,6 +388,9 @@ public class MainForm extends JFrame {
         newMsg.setBounds(32, 340, 400, 20);
         newMsg.setEditable(false);
         newMsg.addKeyListener(new KeyListener() {
+
+            private String s = "";
+
             @Override
             public void keyTyped(KeyEvent e) {
             }
@@ -330,21 +398,24 @@ public class MainForm extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    connection.sendMessage(newMsg.getText());
-                    messagingArea.append(localNickText.getText() + ":" + newMsg.getText() + "\n");
+                    s = newMsg.getText();
+                    if (s.length() != 0 && s.length() < 30) {
+                        connection.sendMessage(s);
+                        messagingArea.append(localNickText.getText() + ":" + newMsg.getText() + "\n");
+                    } else {
+                        // Invalid message length
+                    }
                 }
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                if ((e.getKeyCode() == KeyEvent.VK_ENTER) && s.length() < 30) {
                     newMsg.setText("");
                 }
             }
         });
         add(newMsg);
-
-
 
         JLabel messagingBG = new JLabel("");
         messagingBG.setBounds(25, 55, 416, 322);
@@ -361,10 +432,12 @@ public class MainForm extends JFrame {
         apply.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
     }
-    public static void main(String[] args){
-        try{
+
+    public static void main(String[] args) {
+        try {
             Thread.sleep(2000);
-        } catch (InterruptedException e ){}
+        } catch (InterruptedException e) {
+        }
         MainForm mainForm = new MainForm();
         mainForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainForm.setVisible(true);

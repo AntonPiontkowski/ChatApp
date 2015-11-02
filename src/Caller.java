@@ -11,44 +11,52 @@ public class Caller {
     private String remoteNick;
     private CallStatus status;
 
-    public Caller(){
+    public Caller() {
         this.localNick = "unnamed";
         this.remoteAddress = getRemoteAddress();
     }
-    public Caller(String localNick,SocketAddress remoteAddress){
+
+    public Caller(String localNick, SocketAddress remoteAddress) {
         this.localNick = localNick;
         this.remoteAddress = remoteAddress;
     }
-    public Caller(String localNick,String ip){
+
+    public Caller(String localNick, String ip) {
         this.localNick = localNick;
         this.ip = ip;
     }
 
-    public Connection call() throws Exception{
-        Connection connection = new Connection(new Socket(InetAddress.getByName(ip),port));
+    public Connection call() throws Exception {
+        Connection connection = new Connection(new Socket(InetAddress.getByName(ip), port));
         return connection;
 
     }
-    public String getLocalNick(){
+
+    public String getLocalNick() {
         return this.localNick;
     }
-    public SocketAddress getRemoteAddress(){
+
+    public SocketAddress getRemoteAddress() {
         return this.remoteAddress;
     }
-    public CallStatus getStatus(){
+
+    public CallStatus getStatus() {
         return this.status;
     }
-    public void setLocalNick(String localNick){
+
+    public void setLocalNick(String localNick) {
         this.localNick = localNick;
     }
-    public void setRemoteAddress(SocketAddress remoteAddress){
+
+    public void setRemoteAddress(SocketAddress remoteAddress) {
         this.remoteAddress = remoteAddress;
     }
-    public static void main(String[] args){}
 
-    public enum CallStatus{
-        BUSY,NOT_ACCESIBLE,OK,REJECTED;
+    public static void main(String[] args) {
     }
 
+    public enum CallStatus {
+        BUSY, NOT_ACCESIBLE, OK, REJECTED;
+    }
 
 }
