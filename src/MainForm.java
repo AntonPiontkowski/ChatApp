@@ -1,10 +1,13 @@
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
-import javax.swing.plaf.ScrollBarUI;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
+import java.net.URL;
 
 public class MainForm extends JFrame {
     Caller caller;
@@ -208,6 +211,7 @@ public class MainForm extends JFrame {
         disconnect.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                Sound.CLICK.play();
                 try {
                     connection.disconnect();
                 } catch (IOException ex) {
@@ -290,6 +294,7 @@ public class MainForm extends JFrame {
         connect.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                Sound.CLICK.play();
                 if (remoteAddressText.getText().matches("(?i).*[a-zа-я].*")) {
                     // invalid ip-address
                 } else {
@@ -342,6 +347,7 @@ public class MainForm extends JFrame {
         apply.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                Sound.CLICK.play();
                 if (localNickText.getText().equals("")) {
                     localNickText.setText("unnamed");
                 }
@@ -353,6 +359,7 @@ public class MainForm extends JFrame {
                 } else {
                     // invalid nick length
                 }
+
             }
 
             @Override
@@ -398,6 +405,7 @@ public class MainForm extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    Sound.OUTGOING.play();
                     s = newMsg.getText();
                     if (s.length() != 0 && s.length() < 30) {
                         connection.sendMessage(s);
