@@ -1,6 +1,7 @@
 import javafx.scene.input.KeyCharacterCombination;
 
 import javax.swing.*;
+import javax.swing.plaf.ScrollBarUI;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class MainForm extends JFrame {
     final JTextArea newMsg;
     final JLabel send;
 
-    DefaultListModel listModel;
+    final JTextArea messagingArea;
 
     public MainForm() {
         setBounds(200, 100, 700, 400);
@@ -93,13 +94,10 @@ public class MainForm extends JFrame {
         });
         add(tray);
 
-        listModel = new DefaultListModel();
-        JList messageDisplay = new JList(listModel);
-        JScrollPane pane = new JScrollPane(messageDisplay);
-        pane.setBounds(25, 55, 412, 280);
-        pane.setFocusable(false);
-        messageDisplay.setEnabled(false);
-        add(pane);
+        messagingArea = new JTextArea();
+        final JScrollPane messagePane = new JScrollPane(messagingArea);
+        messagePane.setBounds(25, 55, 403, 280);
+        add(messagePane);
 
         bar = new JLabel("");
         bar.setBounds(0, 0, 700, 31);
@@ -340,7 +338,7 @@ public class MainForm extends JFrame {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER){
                     connection.sendMessage(newMsg.getText());
-                    listModel.addElement(localNickText.getText() + ":" + newMsg.getText() + "\n");
+                    messagingArea.append(localNickText.getText() + ":" + newMsg.getText() + "\n");
                 }
             }
 
@@ -362,7 +360,7 @@ public class MainForm extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 // ��� ���������� ���� ������ ������ send
                 connection.sendMessage(newMsg.getText());
-                listModel.addElement(localNickText.getText() + ":" + newMsg.getText() + "\n");
+                messagingArea.append(localNickText.getText() + ": " + newMsg.getText() + "\n");
                 newMsg.setText("");
             }
 
@@ -392,7 +390,6 @@ public class MainForm extends JFrame {
         messagingBG.setBounds(25,55,416,322);
         messagingBG.setIcon(new ImageIcon("gui/messagingBG.png"));
         add(messagingBG);
-
 
         JLabel background = new JLabel("");
         background.setBounds(0, 0, 700, 400);
