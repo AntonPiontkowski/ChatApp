@@ -1,3 +1,5 @@
+import javafx.scene.input.KeyCharacterCombination;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -23,7 +25,6 @@ public class MainForm extends JFrame {
     final JLabel send;
 
     DefaultListModel listModel;
-    JTextArea massageDisplay;
 
     public MainForm() {
         setBounds(200, 100, 700, 400);
@@ -91,6 +92,14 @@ public class MainForm extends JFrame {
             }
         });
         add(tray);
+
+        listModel = new DefaultListModel();
+        JList messageDisplay = new JList(listModel);
+        JScrollPane pane = new JScrollPane(messageDisplay);
+        pane.setBounds(25, 55, 412, 280);
+        pane.setFocusable(false);
+        messageDisplay.setEnabled(false);
+        add(pane);
 
         bar = new JLabel("");
         bar.setBounds(0, 0, 700, 31);
@@ -182,8 +191,7 @@ public class MainForm extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 // ��� ���������� ���� ������ disconnect
                 try{
-                    //connection.disconnect();
-                    connection.close();
+                    connection.disconnect();
                 }catch (IOException ex){}
 
                 disconnect.setEnabled(false);
@@ -247,7 +255,6 @@ public class MainForm extends JFrame {
                     try {
                         Socket s = new Socket(remoteAddressText.getText(), 28411);
                         connection = new Connection(s);
-                        connection.sendNickHello("2015", localNickText.getText());
                     } catch (Exception ex) {
                     }
 
@@ -324,6 +331,26 @@ public class MainForm extends JFrame {
         newMsg.setBackground(Color.GRAY);
         newMsg.setForeground(Color.ORANGE);
         newMsg.setBounds(70, 356, 367, 20);
+        newMsg.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER){
+                    connection.sendMessage(newMsg.getText());
+                    listModel.addElement(localNickText.getText() + ":" + newMsg.getText() + "\n");
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER){
+                    newMsg.setText("");
+                }
+            }
+        });
         add(newMsg);
 
         send = new JLabel("");
@@ -366,13 +393,6 @@ public class MainForm extends JFrame {
         messagingBG.setIcon(new ImageIcon("gui/messagingBG.png"));
         add(messagingBG);
 
-        listModel = new DefaultListModel();
-        JList massageDisplay = new JList(listModel);
-        JScrollPane pane = new JScrollPane(massageDisplay);
-        pane.setBounds(25, 55, 412, 301);
-        pane.setFocusable(false);
-        massageDisplay.setEnabled(false);
-        add(pane);
 
         JLabel background = new JLabel("");
         background.setBounds(0, 0, 700, 400);

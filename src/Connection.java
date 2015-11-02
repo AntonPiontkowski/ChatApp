@@ -8,7 +8,6 @@ public class Connection {
     private PrintWriter printer;
     private Scanner scanner;
     private Socket socket;
-    private Command command;
 
     public Connection(Socket s) throws IOException{
         this.socket  = s;
@@ -17,15 +16,13 @@ public class Connection {
     }
 
     public void accept(){
-        this.command.type = Command.CommandType.ACCEPT;
-        this.printer.print(command.type.name() + "/n");
+
     }
     public void close() throws IOException{
         socket.close();
     }
     public void disconnect() throws IOException{
-        this.command.type = Command.CommandType.DISCONNECT;
-        this.printer.print(this.command.type.name() + "/n");
+        this.printer.println(Command.CommandType.DISCONNECT);
         close();
     }
     //public boolean isOpen(){}
@@ -33,23 +30,22 @@ public class Connection {
         return new Command(Command.CommandType.valueOf(this.scanner.nextLine()));
     }
     public void reject(){
-        this.command.type = Command.CommandType.REJECT;
+
     }
     public void sendMessage(String msg){
-        this.command.type = Command.CommandType.MESSAGE;
-        this.printer.print(this.command.type.name() + "/n");
-        this.printer.print(msg + "/n");
+        this.printer.println(Command.CommandType.MESSAGE.name());
+        this.printer.println(msg);
     }
     public void sendNickBusy(String ver,String nick){
-        this.command.type = Command.CommandType.NICK;
-        this.printer.print(this.command.type.name() + "/n");
+        //this.command.type = Command.CommandType.NICK;
+        //this.printer.print(this.command.type.name() + "\n");
         this.printer.print(ver + ". User <" + nick
-                + "> is busy!/n");
+                + "> is busy!\n");
     }
     public void sendNickHello(String ver,String nick){
-        this.command.type = Command.CommandType.NICK;
-        this.printer.print(this.command.type.name() + "/n");
+        //this.command.type = Command.CommandType.NICK;
+        //this.printer.print(this.command.type.name() + "\n");
         this.printer.print(ver + ". User <" + nick
-                + "> says hello!/n");
+                + "> says hello!");
     }
 }
