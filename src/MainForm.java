@@ -37,6 +37,7 @@ public class MainForm extends JFrame {
         close.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                Sound.EXIT.play();
                 System.exit(0);
             }
 
@@ -69,6 +70,7 @@ public class MainForm extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 setState(ICONIFIED);
+                Sound.TRAY.play();
             }
 
             @Override
@@ -211,7 +213,7 @@ public class MainForm extends JFrame {
         disconnect.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Sound.CLICK.play();
+                if (disconnect.isEnabled()) Sound.CLICK.play();
                 try {
                     connection.disconnect();
                 } catch (IOException ex) {
@@ -259,14 +261,11 @@ public class MainForm extends JFrame {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     if (remoteAddressText.getText().equals("")) {
-                        return;
                         // connection error
                     } else {
                         connect.setEnabled(false);
                         remoteAddressText.setEnabled(false);
-                        /**
-                         * ??? ?????
-                         */
+
                         newMsg.setEnabled(true);
                         disconnect.setEnabled(true);
                         remoteAddressText.setEnabled(true);
@@ -294,26 +293,25 @@ public class MainForm extends JFrame {
         connect.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Sound.CLICK.play();
+                if (connect.isEnabled()) Sound.CLICK.play();
                 if (remoteAddressText.getText().matches("(?i).*[a-zа-я].*")) {
                     // invalid ip-address
                 } else {
                     if (remoteAddressText.getText().equals("")) {
                         return;
                         // connection error
-                    } else {
-                        connect.setEnabled(false);
-                        remoteAddressText.setEnabled(false);
-                        messagingArea.setEditable(true);
-                        newMsg.setEditable(true);
-                        disconnect.setEnabled(true);
-                        remoteAddressText.setEnabled(true);
+                    } else
                         try {
                             Socket s = new Socket(remoteAddressText.getText(), 28411);
+                            connect.setEnabled(false);
+                            remoteAddressText.setEnabled(false);
+                            messagingArea.setEditable(true);
+                            newMsg.setEditable(true);
+                            disconnect.setEnabled(true);
+                            remoteAddressText.setEnabled(true);
                             connection = new Connection(s);
                             connection.sendNickHello("ChatApp 2015", localNickText.getText());
                         } catch (Exception ex) {
-                        }
                     }
 
                 }
@@ -347,7 +345,7 @@ public class MainForm extends JFrame {
         apply.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Sound.CLICK.play();
+                if (apply.isEnabled()) Sound.CLICK.play();
                 if (localNickText.getText().equals("")) {
                     localNickText.setText("unnamed");
                 }

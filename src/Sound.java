@@ -6,7 +6,9 @@ import java.io.File;
 public enum Sound {
     INCOMING ("sounds/incoming.wav"),
     OUTGOING ("sounds/outgoing.wav"),
-    CLICK ("sounds/click.wav");
+    CLICK ("sounds/click.wav"),
+    EXIT("sounds/exit.wav"),
+    TRAY("sounds/tray.wav");
 
     private Clip clip;
 
