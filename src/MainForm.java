@@ -285,13 +285,15 @@ public class MainForm extends JFrame {
                 if (connect.isEnabled()) Sound.CLICK.play();
                 try {
                     Socket s = new Socket(remoteAddressText.getText(), 28411);
-                    connect.setEnabled(false);
-                    remoteAddressText.setEnabled(false);
-                    newMsg.setEditable(true);
-                    disconnect.setEnabled(true);
-                    remoteAddressText.setEnabled(true);
-                    connection = new Connection(s);
-                    connection.sendNickHello("ChatApp 2015", localNickText.getText());
+                    if (connect.isEnabled()) {
+                        connect.setEnabled(false);
+                        remoteAddressText.setEnabled(false);
+                        newMsg.setEditable(true);
+                        disconnect.setEnabled(true);
+                        remoteAddressText.setEnabled(true);
+                        connection = new Connection(s);
+                        connection.sendNickHello("ChatApp 2015", localNickText.getText());
+                    }
                 } catch (Exception ex) {
                     System.out.println(ex);
                 }
@@ -330,9 +332,11 @@ public class MainForm extends JFrame {
                     localNickText.setText("unnamed");
                 }
                 if (localNickText.getText().length() > 2 && localNickText.getText().length() < 13) {
+                    if (!connect.isEnabled() && apply.isEnabled()) {
+                        connect.setEnabled(true);
+                    }
                     apply.setEnabled(false);
                     localNickText.setEnabled(false);
-                    connect.setEnabled(true);
                     remoteAddressText.setEnabled(true);
                 } else {
                     // invalid nick length

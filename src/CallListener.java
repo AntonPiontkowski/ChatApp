@@ -24,7 +24,7 @@ public class CallListener {
                 ServerSocket server = new ServerSocket(28411);
                 incoming = server.accept();
                 connection = new Connection(incoming);
-                //обмен никами
+                //обмен никами (exchanging nicks)
             }catch (IOException e){}
             connection.accept();
             return connection;
