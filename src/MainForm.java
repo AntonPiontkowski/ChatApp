@@ -253,6 +253,26 @@ public class MainForm extends JFrame {
         remoteAddressText.setBounds(480, 215, 197, 20);
         remoteAddressText.setToolTipText("Address to connect to");
         remoteAddressText.setRows(1);
+        remoteAddressText.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyChar() == '\n') {
+                    String b = new String();
+                    b = remoteAddressText.getText();
+                    remoteAddressText.setText(b.trim());
+                }
+            }
+        });
         add(remoteAddressText);
 
         connect = new JLabel("");
@@ -267,7 +287,6 @@ public class MainForm extends JFrame {
                     Socket s = new Socket(remoteAddressText.getText(), 28411);
                     connect.setEnabled(false);
                     remoteAddressText.setEnabled(false);
-                    messagingArea.setEditable(true);
                     newMsg.setEditable(true);
                     disconnect.setEnabled(true);
                     remoteAddressText.setEnabled(true);
@@ -318,7 +337,6 @@ public class MainForm extends JFrame {
                 } else {
                     // invalid nick length
                 }
-
             }
 
             @Override
