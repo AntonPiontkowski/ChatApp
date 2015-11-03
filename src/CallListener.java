@@ -1,4 +1,7 @@
+import java.io.IOException;
 import java.net.SocketAddress;
+import java.net.Socket;
+import java. net.ServerSocket;
 
 public class CallListener {
     private boolean busy;
@@ -6,6 +9,8 @@ public class CallListener {
     private String localNick;
     private SocketAddress remoteAddress;
     private String remoteNick;
+    Socket incoming;
+    Connection connection;
 
     public CallListener(){}
     public CallListener(String localNick){
@@ -13,7 +18,21 @@ public class CallListener {
     }
     public CallListener(String localNick,String localIp){}
 
-    //public Connection getConnection(){}
+    public Connection getConnection(){
+        if (busy == false){
+            try {
+                ServerSocket server = new ServerSocket(28411);
+                incoming = server.accept();
+                connection = new Connection(incoming);
+                //обмен никами
+            }catch (IOException e){}
+            connection.accept();
+            return connection;
+        }else {
+            connection.sendNickBusy("ChatApp 2015", localNick);
+            return null;
+        }
+    }
     public SocketAddress getListenAddress(){
         return this.listenAddress;
     }
