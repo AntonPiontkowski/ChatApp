@@ -21,12 +21,6 @@ public class Command {
 
     public enum CommandType {
         ACCEPT, DISCONNECT, MESSAGE, NICK, REJECT;
-		/*
-		 * public CommandType valueOf(String name){ if
-		 * (name.equals("Disconnected")) return DISCONNECT; else if
-		 * (name.equals("Message")) return MESSAGE; else if
-		 * (name.equals("Accepted")) return ACCEPT; else if
-		 * (name.equals("Rejected")) return REJECT; else return NICK; }
-		 */
+
     }
 }

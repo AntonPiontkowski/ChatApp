@@ -1,13 +1,9 @@
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.URL;
+
 
 public class MainForm extends JFrame {
     Caller caller;
@@ -96,6 +92,7 @@ public class MainForm extends JFrame {
         add(tray);
 
         messagingArea = new JTextArea("");
+        messagingArea.setLineWrap(true);
         messagingArea.setEditable(false);
         final JScrollPane messagePane = new JScrollPane(messagingArea);
         messagePane.setVisible(true);
@@ -175,26 +172,28 @@ public class MainForm extends JFrame {
 
         localNickText = new JTextArea();
         localNickText.setBounds(480, 86, 130, 20);
+        localNickText.setColumns(15);
+        localNickText.setRows(1);
+        localNickText.setToolTipText("Your nickname");
         localNickText.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
+
             }
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    if (localNickText.getText().equals("")) {
-                        localNickText.setText("unnamed");
-                    }
-                    apply.setEnabled(false);
-                    localNickText.setEnabled(false);
-                    connect.setEnabled(true);
-                    remoteAddressText.setEnabled(true);
-                }
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
+                StringBuilder b = new StringBuilder(localNickText.getText());
+                if (localNickText.getText().length() > 12) {
+                    localNickText.setText(b.delete(12, b.length()).toString());
+                }
+                if (e.getKeyChar() == '\n') {
+                    localNickText.setText(b.toString().trim());
+                }
             }
         });
 
@@ -203,6 +202,7 @@ public class MainForm extends JFrame {
         JTextArea remoteNickText = new JTextArea();
         remoteNickText.setEditable(false);
         remoteNickText.setEnabled(false);
+        remoteNickText.setToolTipText("Mate's nickname(auto fill)");
         remoteNickText.setBounds(480, 305, 197, 20);
         add(remoteNickText);
 
@@ -251,39 +251,8 @@ public class MainForm extends JFrame {
         remoteAddressText = new JTextArea();
         remoteAddressText.setEnabled(false);
         remoteAddressText.setBounds(480, 215, 197, 20);
-        remoteAddressText.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    if (remoteAddressText.getText().equals("")) {
-                        // connection error
-                    } else {
-                        connect.setEnabled(false);
-                        remoteAddressText.setEnabled(false);
-
-                        newMsg.setEnabled(true);
-                        disconnect.setEnabled(true);
-                        remoteAddressText.setEnabled(true);
-                        try {
-                            Socket s = new Socket(remoteAddressText.getText(), 28411);
-                            connection = new Connection(s);
-                        } catch (Exception ex) {
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-
-            }
-        });
-
+        remoteAddressText.setToolTipText("Address to connect to");
+        remoteAddressText.setRows(1);
         add(remoteAddressText);
 
         connect = new JLabel("");
@@ -294,26 +263,18 @@ public class MainForm extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (connect.isEnabled()) Sound.CLICK.play();
-                if (remoteAddressText.getText().matches("(?i).*[a-zа-я].*")) {
-                    // invalid ip-address
-                } else {
-                    if (remoteAddressText.getText().equals("")) {
-                        return;
-                        // connection error
-                    } else
-                        try {
-                            Socket s = new Socket(remoteAddressText.getText(), 28411);
-                            connect.setEnabled(false);
-                            remoteAddressText.setEnabled(false);
-                            messagingArea.setEditable(true);
-                            newMsg.setEditable(true);
-                            disconnect.setEnabled(true);
-                            remoteAddressText.setEnabled(true);
-                            connection = new Connection(s);
-                            connection.sendNickHello("ChatApp 2015", localNickText.getText());
-                        } catch (Exception ex) {
-                    }
-
+                try {
+                    Socket s = new Socket(remoteAddressText.getText(), 28411);
+                    connect.setEnabled(false);
+                    remoteAddressText.setEnabled(false);
+                    messagingArea.setEditable(true);
+                    newMsg.setEditable(true);
+                    disconnect.setEnabled(true);
+                    remoteAddressText.setEnabled(true);
+                    connection = new Connection(s);
+                    connection.sendNickHello("ChatApp 2015", localNickText.getText());
+                } catch (Exception ex) {
+                    System.out.println(ex);
                 }
             }
 
@@ -392,9 +353,10 @@ public class MainForm extends JFrame {
         newMsg.setForeground(Color.ORANGE);
         newMsg.setBounds(32, 340, 400, 20);
         newMsg.setEditable(false);
+        newMsg.setToolTipText("Enter your message here");
+        newMsg.setColumns(50);
+        newMsg.setRows(1);
         newMsg.addKeyListener(new KeyListener() {
-
-            private String s = "";
 
             @Override
             public void keyTyped(KeyEvent e) {
@@ -402,21 +364,20 @@ public class MainForm extends JFrame {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    Sound.OUTGOING.play();
-                    s = newMsg.getText();
-                    if (s.length() != 0 && s.length() < 30) {
-                        connection.sendMessage(s);
-                        messagingArea.append(localNickText.getText() + ":" + newMsg.getText() + "\n");
-                    } else {
-                        // Invalid message length
-                    }
-                }
+
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                if ((e.getKeyCode() == KeyEvent.VK_ENTER) && s.length() < 30) {
+                StringBuilder b = new StringBuilder(newMsg.getText());
+                if (newMsg.getText().length() > 57) {
+                    newMsg.setText(b.delete(57, b.length()).toString());
+                }
+                if (e.getKeyChar() == '\n') {
+                    newMsg.setText(b.toString().trim());
+                    Sound.OUTGOING.play();
+                    connection.sendMessage(newMsg.getText());
+                    messagingArea.append(localNickText.getText() + ":" + newMsg.getText() + "\n");
                     newMsg.setText("");
                 }
             }
@@ -436,7 +397,6 @@ public class MainForm extends JFrame {
         connect.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         disconnect.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         apply.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
     }
 
     public static void main(String[] args) {

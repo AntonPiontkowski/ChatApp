@@ -1,5 +1,6 @@
 import java.io.IOException;
 
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -29,11 +30,10 @@ public class Connection {
         close();
     }
 
-    /*
-     * public Command receive(){
-     *
-     * }
-     */
+     public Command receive() throws IOException{
+         String command = this.scanner.nextLine();
+         return new Command(Command.CommandType.valueOf(command));
+     }
     public void reject() {
 
     }
@@ -49,7 +49,7 @@ public class Connection {
     }
 
     public void sendNickHello(String ver, String nick) {
-        this.printer.print("Nick \n");
+        this.printer.print(nick + "\n");
         this.printer.print(ver + ". User <" + nick + "> says hello!\n");
     }
 }
