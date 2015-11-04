@@ -1,13 +1,9 @@
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.UnknownHostException;
+import java.net.*;
 
 public class Caller {
     private String localNick;
     private SocketAddress remoteAddress;
-    private final int port = 28411;
-    private String ip;
+    private static  final int port = 28411;
     private String remoteNick;
     private CallStatus status;
 
@@ -23,13 +19,12 @@ public class Caller {
 
     public Caller(String localNick, String ip) {
         this.localNick = localNick;
-        this.ip = ip;
+        this.remoteAddress = new InetSocketAddress(ip,port);
     }
 
     public Connection call() throws Exception {
-        Connection connection = new Connection(new Socket(InetAddress.getByName(ip), port));
+        Connection connection = new Connection(new Socket());
         return connection;
-
     }
 
     public String getLocalNick() {
@@ -50,9 +45,6 @@ public class Caller {
 
     public void setRemoteAddress(SocketAddress remoteAddress) {
         this.remoteAddress = remoteAddress;
-    }
-
-    public static void main(String[] args) {
     }
 
     public enum CallStatus {

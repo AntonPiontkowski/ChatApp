@@ -33,8 +33,8 @@ public class CallListenerThread extends Observable implements Runnable{
     public void setLocalNick(String localNick){
         this.callListener.setLocalNick(localNick);
     }
-
     @Override
-    public void run() {}
+    public void run() {
+    }
     public static void main(String[] args){}
 }

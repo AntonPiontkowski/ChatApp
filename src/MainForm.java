@@ -3,13 +3,20 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Observable;
+import java.util.Observer;
 
 
 public class MainForm extends JFrame {
     Caller caller;
     Connection connection;
+    CommandListenerThread commandThread;
     private int xMouse;
     private int yMouse;
+
+    private static final int MAX_MSG_LENGTH = 57;
+    private static final int MAX_NICK_LENGTH = 15;
+    private static final int MIN_NICK_LENGTH = 3;
 
     final JLabel close;
     final JLabel tray;
@@ -188,8 +195,8 @@ public class MainForm extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 StringBuilder b = new StringBuilder(localNickText.getText());
-                if (localNickText.getText().length() > 12) {
-                    localNickText.setText(b.delete(12, b.length()).toString());
+                if (localNickText.getText().length() > MAX_NICK_LENGTH) {
+                    localNickText.setText(b.delete(MAX_NICK_LENGTH, b.length()).toString());
                 }
                 if (e.getKeyChar() == '\n') {
                     localNickText.setText(b.toString().trim());
@@ -331,7 +338,7 @@ public class MainForm extends JFrame {
                 if (localNickText.getText().equals("")) {
                     localNickText.setText("unnamed");
                 }
-                if (localNickText.getText().length() > 2 && localNickText.getText().length() < 13) {
+                if (localNickText.getText().length() > MIN_NICK_LENGTH && localNickText.getText().length() < MAX_NICK_LENGTH) {
                     if (!connect.isEnabled() && apply.isEnabled()) {
                         connect.setEnabled(true);
                     }
@@ -369,7 +376,6 @@ public class MainForm extends JFrame {
         fieldsBG.setBounds(0, 0, 700, 400);
         fieldsBG.setIcon(new ImageIcon("gui/fieldsBG.png"));
         add(fieldsBG);
-
         newMsg = new JTextArea("");
         newMsg.setBackground(Color.GRAY);
         newMsg.setForeground(Color.ORANGE);
@@ -392,8 +398,8 @@ public class MainForm extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 StringBuilder b = new StringBuilder(newMsg.getText());
-                if (newMsg.getText().length() > 57) {
-                    newMsg.setText(b.delete(57, b.length()).toString());
+                if (newMsg.getText().length() > MAX_MSG_LENGTH) {
+                    newMsg.setText(b.delete(MAX_MSG_LENGTH, b.length()).toString());
                 }
                 if (e.getKeyChar() == '\n') {
                     newMsg.setText(b.toString().trim());
