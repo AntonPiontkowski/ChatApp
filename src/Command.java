@@ -4,8 +4,11 @@ public class Command {
     public Command(CommandType t) {
         this.type = t;
     }
-
-    @Override
+    public Command(){};
+    /*
+    * WILL BE EDITED
+    */
+   /* @Override
     public String toString() {
         if (type.name().equals("DISCONNECT"))
             return "Disconnected";
@@ -17,7 +20,7 @@ public class Command {
             return "Rejected";
         else
             return "Nick";
-    }
+    }*/
 
     public enum CommandType {
         ACCEPT, DISCONNECT, MESSAGE, NICK, REJECT;

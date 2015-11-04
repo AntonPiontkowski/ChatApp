@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.net.*;
 
 public class Caller {
@@ -22,9 +23,14 @@ public class Caller {
         this.remoteAddress = new InetSocketAddress(ip,port);
     }
 
-    public Connection call() throws Exception {
-        Connection connection = new Connection(new Socket());
-        return connection;
+    public Connection call(){
+        try{
+            Connection connection = new Connection(new Socket());
+            return connection;
+        } catch (IOException e){
+            // EDIT LATER
+            return null;
+        }
     }
 
     public String getLocalNick() {

@@ -8,9 +8,9 @@ import java.util.Observer;
 
 
 public class MainForm extends JFrame {
-    Caller caller;
-    Connection connection;
-    CommandListenerThread commandThread;
+    private Caller caller;
+    private Connection connection;
+    private CommandListenerThread commandThread;
     private int xMouse;
     private int yMouse;
 
@@ -300,6 +300,15 @@ public class MainForm extends JFrame {
                         remoteAddressText.setEnabled(true);
                         connection = new Connection(s);
                         connection.sendNickHello("ChatApp 2015", localNickText.getText());
+                        /*
+                        TO ADD
+                        */
+                        /*commandThread = new CommandListenerThread(connection);
+                        commandThread.addObserver(new Observer() {
+                            @Override
+                            public void update(Observable o, Object arg) {
+                            }
+                        });*/
                     }
                 } catch (Exception ex) {
                     System.out.println(ex);
@@ -425,6 +434,7 @@ public class MainForm extends JFrame {
         connect.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         disconnect.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         apply.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
     }
 
     public static void main(String[] args) {
