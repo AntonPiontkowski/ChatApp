@@ -12,6 +12,7 @@ public class CallListener {
     private SocketAddress remoteAddress;
     private String remoteNick;
     Connection connection;
+    Socket socket;
 
     public CallListener(){}
     public CallListener(String localNick){
@@ -25,7 +26,7 @@ public class CallListener {
     public Connection getConnection(){
         try {
             ServerSocket serverSocket = new ServerSocket(PORT);
-             Socket socket = serverSocket.accept();
+            socket = serverSocket.accept();
             return new Connection(socket);
         } catch (IOException e){
             // JDialogue with exception
@@ -44,6 +45,7 @@ public class CallListener {
     public String getRemoteNick(){
         return this.remoteNick;
     }
+    public Socket getSocket(){return this.socket;}
     public boolean isBusy(){
         return this.busy;
     }
@@ -56,5 +58,6 @@ public class CallListener {
     public void setListenAddress(SocketAddress listenAddress){
         this.listenAddress = listenAddress;
     }
+    public void setRemoteNick(String remoteNick){this.remoteNick = remoteNick;}
 
 }
