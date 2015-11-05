@@ -1,35 +1,34 @@
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.Socket;
 import java. net.ServerSocket;
 
 public class CallListener {
+    private static final int PORT = 28411;
     private boolean busy;
     private SocketAddress listenAddress;
     private String localNick;
     private SocketAddress remoteAddress;
     private String remoteNick;
-    Socket incoming;
     Connection connection;
 
     public CallListener(){}
     public CallListener(String localNick){
         this.localNick = localNick;
     }
-    public CallListener(String localNick,String localIp){}
+    public CallListener(String localNick,String localIp){
+        this.localNick = localNick;
+        this.listenAddress = new InetSocketAddress(localIp, PORT);
+    }
 
     public Connection getConnection(){
-        if (busy == false){
-            try {
-                ServerSocket server = new ServerSocket(28411);
-                incoming = server.accept();
-                connection = new Connection(incoming);
-                //обмен никами (exchanging nicks)
-            }catch (IOException e){}
-            connection.accept();
-            return connection;
-        }else {
-            connection.sendNickBusy("ChatApp 2015", localNick);
+        try {
+            ServerSocket serverSocket = new ServerSocket(PORT);
+             Socket socket = serverSocket.accept();
+            return new Connection(socket);
+        } catch (IOException e){
+            // JDialogue with exception
             return null;
         }
     }
@@ -57,5 +56,5 @@ public class CallListener {
     public void setListenAddress(SocketAddress listenAddress){
         this.listenAddress = listenAddress;
     }
-    public static void main(String[] args){}
+
 }

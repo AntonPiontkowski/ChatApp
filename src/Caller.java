@@ -1,13 +1,10 @@
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.UnknownHostException;
+import java.io.IOException;
+import java.net.*;
 
 public class Caller {
     private String localNick;
     private SocketAddress remoteAddress;
-    private final int port = 28411;
-    private String ip;
+    private static  final int PORT = 28411;
     private String remoteNick;
     private CallStatus status;
 
@@ -15,7 +12,8 @@ public class Caller {
         this.localNick = "unnamed";
         this.remoteAddress = getRemoteAddress();
     }
-
+    public Caller(String localNick){
+    }
     public Caller(String localNick, SocketAddress remoteAddress) {
         this.localNick = localNick;
         this.remoteAddress = remoteAddress;
@@ -23,13 +21,21 @@ public class Caller {
 
     public Caller(String localNick, String ip) {
         this.localNick = localNick;
-        this.ip = ip;
+        this.remoteAddress = new InetSocketAddress(ip, PORT);
     }
 
-    public Connection call() throws Exception {
-        Connection connection = new Connection(new Socket(InetAddress.getByName(ip), port));
-        return connection;
-
+    public Connection call(){
+        try{
+            Socket s = new Socket();
+            s.connect(this.remoteAddress);
+            Connection connection = new Connection(s);
+            // ADD USING OF CALLSTATUS
+            return connection;
+        } catch (IOException e){
+            // EDIT LATER
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public String getLocalNick() {
@@ -50,9 +56,6 @@ public class Caller {
 
     public void setRemoteAddress(SocketAddress remoteAddress) {
         this.remoteAddress = remoteAddress;
-    }
-
-    public static void main(String[] args) {
     }
 
     public enum CallStatus {

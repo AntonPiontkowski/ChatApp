@@ -2,19 +2,29 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Observable;
+import java.util.Observer;
 
 
 public class MainForm extends JFrame {
-    Caller caller;
-    Connection connection;
+    private Caller caller;
+    private Connection connection;
+    private CommandListenerThread commandThread;
     private int xMouse;
     private int yMouse;
+
+    private static final int MAX_MSG_LENGTH = 57;
+    private static final int MAX_NICK_LENGTH = 15;
+    private static final int MIN_NICK_LENGTH = 3;
+    private static final int PORT = 28411;
 
     final JLabel close;
     final JLabel tray;
     final JLabel bar;
     final JTextArea localNickText;
+    final JTextArea remoteNickText;
     final JLabel disconnect;
     final JTextArea remoteAddressText;
     final JLabel connect;
@@ -30,6 +40,7 @@ public class MainForm extends JFrame {
         close = new JLabel("");
         close.setIcon(new ImageIcon("gui/close.png"));
         close.setBounds(673, 7, 15, 15);
+        close.setToolTipText("Close");
         close.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -62,6 +73,7 @@ public class MainForm extends JFrame {
         tray = new JLabel("");
         tray.setIcon(new ImageIcon("gui/tray.png"));
         tray.setBounds(653, 7, 15, 15);
+        tray.setToolTipText("Minimize");
         tray.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -188,8 +200,8 @@ public class MainForm extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 StringBuilder b = new StringBuilder(localNickText.getText());
-                if (localNickText.getText().length() > 12) {
-                    localNickText.setText(b.delete(12, b.length()).toString());
+                if (localNickText.getText().length() > MAX_NICK_LENGTH) {
+                    localNickText.setText(b.delete(MAX_NICK_LENGTH, b.length()).toString());
                 }
                 if (e.getKeyChar() == '\n') {
                     localNickText.setText(b.toString().trim());
@@ -198,8 +210,7 @@ public class MainForm extends JFrame {
         });
 
         add(localNickText);
-
-        JTextArea remoteNickText = new JTextArea();
+        remoteNickText = new JTextArea();
         remoteNickText.setEditable(false);
         remoteNickText.setEnabled(false);
         remoteNickText.setToolTipText("Mate's nickname(auto fill)");
@@ -284,18 +295,33 @@ public class MainForm extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 if (connect.isEnabled()) Sound.CLICK.play();
                 try {
-                    Socket s = new Socket(remoteAddressText.getText(), 28411);
-                    if (connect.isEnabled()) {
-                        connect.setEnabled(false);
-                        remoteAddressText.setEnabled(false);
-                        newMsg.setEditable(true);
-                        disconnect.setEnabled(true);
-                        remoteAddressText.setEnabled(true);
-                        connection = new Connection(s);
-                        connection.sendNickHello("ChatApp 2015", localNickText.getText());
+                    if(caller == null)
+                        caller = new Caller(localNickText.getText(), remoteAddressText.getText());
+                    else
+                        caller.setRemoteAddress(new InetSocketAddress(remoteAddressText.getText(),PORT));
+                    connection = caller.call();
+                    if (!connection.equals(null)){
+                        if (connect.isEnabled()) {
+                            connect.setEnabled(false);
+                            remoteAddressText.setEnabled(false);
+                            newMsg.setEditable(true);
+                            disconnect.setEnabled(true);
+                            remoteAddressText.setEnabled(true);
+                        }
+                        commandThread = new CommandListenerThread(connection);
+                        commandThread.addObserver(new Observer() {
+                            @Override
+                            public void update(Observable o, Object arg) {
+                                if (commandThread.getLastCommand().equals(Command.CommandType.MESSAGE)){
+                                    Sound.INCOMING.play();
+                                    newMsg.append(remoteNickText.getText() + ":" + /*received msg*/ "\n");
+                                }
+                            }
+                        });
                     }
-                } catch (Exception ex) {
-                    System.out.println(ex);
+                    }
+                catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
 
@@ -331,7 +357,7 @@ public class MainForm extends JFrame {
                 if (localNickText.getText().equals("")) {
                     localNickText.setText("unnamed");
                 }
-                if (localNickText.getText().length() > 2 && localNickText.getText().length() < 13) {
+                if (localNickText.getText().length() > MIN_NICK_LENGTH && localNickText.getText().length() < MAX_NICK_LENGTH) {
                     if (!connect.isEnabled() && apply.isEnabled()) {
                         connect.setEnabled(true);
                     }
@@ -369,7 +395,6 @@ public class MainForm extends JFrame {
         fieldsBG.setBounds(0, 0, 700, 400);
         fieldsBG.setIcon(new ImageIcon("gui/fieldsBG.png"));
         add(fieldsBG);
-
         newMsg = new JTextArea("");
         newMsg.setBackground(Color.GRAY);
         newMsg.setForeground(Color.ORANGE);
@@ -392,8 +417,8 @@ public class MainForm extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 StringBuilder b = new StringBuilder(newMsg.getText());
-                if (newMsg.getText().length() > 57) {
-                    newMsg.setText(b.delete(57, b.length()).toString());
+                if (newMsg.getText().length() > MAX_MSG_LENGTH) {
+                    newMsg.setText(b.delete(MAX_MSG_LENGTH, b.length()).toString());
                 }
                 if (e.getKeyChar() == '\n') {
                     newMsg.setText(b.toString().trim());
@@ -419,6 +444,7 @@ public class MainForm extends JFrame {
         connect.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         disconnect.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         apply.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
     }
 
     public static void main(String[] args) {

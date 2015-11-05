@@ -17,7 +17,7 @@ public class Connection {
         this.scanner = new Scanner(s.getInputStream());
     }
 
-    public void accept() {
+    public synchronized void accept() {
         this.printer.print("Accepted\n");
     }
 
@@ -25,31 +25,31 @@ public class Connection {
         socket.close();
     }
 
-    public void disconnect() throws IOException {
+    public synchronized void disconnect() throws IOException {
         this.printer.println("Disconnected\n");
         close();
     }
 
-     public Command receive() throws IOException{
+     public synchronized Command receive() throws IOException{
          String command = this.scanner.nextLine();
-         return new Command(Command.CommandType.valueOf(command));
+         return null;
+         // FIRSTLY EDIT COMMAND NESTED CLASS
      }
-    public void reject() {
-
+    public synchronized void reject() {
+        this.printer.print("Rejected\n");
     }
 
-    public void sendMessage(String msg) {
+    public synchronized void sendMessage(String msg) {
         this.printer.print("Message\n");
         this.printer.println(msg);
     }
 
-    public void sendNickBusy(String ver, String nick) {
-        this.printer.print("Busy\n");
-        this.printer.print(ver + ". User <" + nick + "> is busy!\n");
+    public synchronized void sendNickBusy(String ver, String nick) {
+        this.printer.print(ver + " user <" + nick + "> busy!\n");
     }
 
-    public void sendNickHello(String ver, String nick) {
+    public synchronized void sendNickHello(String ver, String nick) {
         this.printer.print(nick + "\n");
-        this.printer.print(ver + ". User <" + nick + "> says hello!\n");
+        this.printer.print(ver + " user <" + nick + ">!\n");
     }
 }
