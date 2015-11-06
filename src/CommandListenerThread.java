@@ -5,6 +5,8 @@ public class CommandListenerThread extends Observable implements Runnable {
     private Connection connection;
     private boolean disconnected;
     private Command lastCommand;
+    private MessageCommand lastMessageCommand;
+    private NickCommand lastNickCommand;
 
     public CommandListenerThread(){
     }
@@ -23,6 +25,12 @@ public class CommandListenerThread extends Observable implements Runnable {
     }
     public Command getLastCommand(){
         return this.lastCommand;
+    }
+    public String getMessage(){
+        return this.lastMessageCommand.message;
+    }
+    public String getNick(){
+        return this.lastNickCommand.nick;
     }
     public boolean isDisconnected(){
         return this.disconnected;

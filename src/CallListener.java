@@ -1,8 +1,5 @@
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.net.Socket;
-import java. net.ServerSocket;
+import java.net.*;
 
 public class CallListener {
     private static final int PORT = 28411;
@@ -15,8 +12,9 @@ public class CallListener {
     Socket socket;
 
     public CallListener(){}
-    public CallListener(String localNick){
+    public CallListener(String localNick) throws UnknownHostException{
         this.localNick = localNick;
+        this.listenAddress = new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(),PORT);
     }
     public CallListener(String localNick,String localIp){
         this.localNick = localNick;

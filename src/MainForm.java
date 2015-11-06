@@ -1,9 +1,13 @@
+import jdk.nashorn.internal.codegen.CompilerConstants;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -11,7 +15,9 @@ import java.util.Observer;
 public class MainForm extends JFrame {
     private Caller caller;
     private Connection connection;
+    private CallListener callListener;
     private CommandListenerThread commandThread;
+    private CallListenerThread callThread;
     private int xMouse;
     private int yMouse;
 
@@ -235,6 +241,10 @@ public class MainForm extends JFrame {
                 remoteAddressText.setEnabled(true);
                 newMsg.setEditable(false);
                 messagingArea.setText("");
+                if (!remoteAddressText.getText().equals(""))
+                    remoteAddressText.setText("");
+                if (!remoteNickText.getText().equals(""))
+                    remoteNickText.setText("");
             }
 
             @Override
@@ -318,6 +328,7 @@ public class MainForm extends JFrame {
                                 }
                             }
                         });
+                        SwingUtilities.invokeLater(commandThread);
                     }
                     }
                 catch (Exception ex) {
@@ -354,18 +365,30 @@ public class MainForm extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (apply.isEnabled()) Sound.CLICK.play();
-                if (localNickText.getText().equals("")) {
-                    localNickText.setText("unnamed");
-                }
-                if (localNickText.getText().length() > MIN_NICK_LENGTH && localNickText.getText().length() < MAX_NICK_LENGTH) {
-                    if (!connect.isEnabled() && apply.isEnabled()) {
-                        connect.setEnabled(true);
+                try{
+                    if (localNickText.getText().equals("")|localNickText.getText().length()<MIN_NICK_LENGTH) {
+                        localNickText.setText("unnamed");
                     }
-                    apply.setEnabled(false);
-                    localNickText.setEnabled(false);
-                    remoteAddressText.setEnabled(true);
-                } else {
-                    // invalid nick length
+                    if (localNickText.getText().length() > MIN_NICK_LENGTH && localNickText.getText().length() < MAX_NICK_LENGTH) {
+                        if (!connect.isEnabled() && apply.isEnabled()) {
+                            connect.setEnabled(true);
+                        }
+                        apply.setEnabled(false);
+                        localNickText.setEnabled(false);
+                        remoteAddressText.setEnabled(true);
+                    }
+                    callListener = new CallListener(localNickText.getText(), InetAddress.getLocalHost().getHostAddress());
+                    callThread = new CallListenerThread(callListener);
+                    callThread.addObserver(new Observer() {
+                        @Override
+                        public void update(Observable o, Object arg) {
+                            // new JDialogue with a request to begin chat
+                        }
+                    });
+                    SwingUtilities.invokeLater(callThread);
+                }
+                catch (UnknownHostException e2){
+                    e2.printStackTrace();
                 }
             }
 
