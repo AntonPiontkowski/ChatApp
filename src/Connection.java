@@ -30,32 +30,34 @@ public class Connection {
         close();
     }
 
-     public synchronized Command receive() throws IOException{
-         String command = this.scanner.nextLine();
-         return null;
-         // FIRSTLY EDIT COMMAND NESTED CLASS
-         // add "transformation" from <String> to <Command>
-     }
-    public synchronized  String receiveMessage(){
+    public synchronized Command receive() throws IOException {
+        String command = this.scanner.nextLine();
+        return null;
+        // FIRSTLY EDIT COMMAND NESTED CLASS
+        // add "transformation" from <String> to <Command>
+    }
+
+    public synchronized String receiveMessage() {
         Sound.INCOMING.play();
         return scanner.nextLine();
     }
-    public synchronized String[] receiveNickVer(){
+
+    public synchronized String[] receiveNickVer() {
         String line = scanner.nextLine();
         String[] checking = line.split(" ");
         /*checking for the right answer
         from another user        */
-        if ((checking[0].equals("ChatApp"))&(checking[1].equals("2015"))&(checking[2].equals("user"))){
+        if ((checking[0].equals("ChatApp")) & (checking[1].equals("2015")) & (checking[2].equals("user"))) {
             String[] info = new String[2];
             info[0] = checking[0] + " " + checking[1];
             info[1] = checking[4];
             return info;
-        }
-        else {
+        } else {
             // handle the wrong greeting
             return null;
         }
     }
+
     public synchronized void reject() {
         this.printer.print("Rejected\n");
     }

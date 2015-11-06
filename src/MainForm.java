@@ -305,12 +305,12 @@ public class MainForm extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 if (connect.isEnabled()) Sound.CLICK.play();
                 try {
-                    if(caller == null)
+                    if (caller == null)
                         caller = new Caller(localNickText.getText(), remoteAddressText.getText());
                     else
-                        caller.setRemoteAddress(new InetSocketAddress(remoteAddressText.getText(),PORT));
+                        caller.setRemoteAddress(new InetSocketAddress(remoteAddressText.getText(), PORT));
                     connection = caller.call();
-                    if (!connection.equals(null)){
+                    if (!connection.equals(null)) {
                         if (connect.isEnabled()) {
                             connect.setEnabled(false);
                             remoteAddressText.setEnabled(false);
@@ -322,7 +322,7 @@ public class MainForm extends JFrame {
                         commandThread.addObserver(new Observer() {
                             @Override
                             public void update(Observable o, Object arg) {
-                                if (commandThread.getLastCommand().equals(Command.CommandType.MESSAGE)){
+                                if (commandThread.getLastCommand().equals(Command.CommandType.MESSAGE)) {
                                     Sound.INCOMING.play();
                                     newMsg.append(remoteNickText.getText() + ":" + /*received msg*/ "\n");
                                 }
@@ -330,8 +330,7 @@ public class MainForm extends JFrame {
                         });
                         SwingUtilities.invokeLater(commandThread);
                     }
-                    }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
@@ -365,8 +364,8 @@ public class MainForm extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (apply.isEnabled()) Sound.CLICK.play();
-                try{
-                    if (localNickText.getText().equals("")|localNickText.getText().length()<MIN_NICK_LENGTH) {
+                try {
+                    if (localNickText.getText().equals("") | localNickText.getText().length() < MIN_NICK_LENGTH) {
                         localNickText.setText("unnamed");
                     }
                     if (localNickText.getText().length() > MIN_NICK_LENGTH && localNickText.getText().length() < MAX_NICK_LENGTH) {
@@ -386,8 +385,7 @@ public class MainForm extends JFrame {
                         }
                     });
                     SwingUtilities.invokeLater(callThread);
-                }
-                catch (UnknownHostException e2){
+                } catch (UnknownHostException e2) {
                     e2.printStackTrace();
                 }
             }

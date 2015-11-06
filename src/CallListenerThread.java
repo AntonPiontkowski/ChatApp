@@ -5,43 +5,55 @@ import java.net.SocketAddress;
 import java.util.Observable;
 import java.util.Scanner;
 
-public class CallListenerThread extends Observable implements Runnable{
+public class CallListenerThread extends Observable implements Runnable {
     private CallListener callListener;
 
-    public CallListenerThread(){}
-    public CallListenerThread(CallListener callListener){
+    public CallListenerThread() {
+    }
+
+    public CallListenerThread(CallListener callListener) {
         this.callListener = callListener;
     }
 
-    public SocketAddress getListenAddress(){
+    public SocketAddress getListenAddress() {
         return this.callListener.getListenAddress();
     }
-    public String getLocalNick(){
+
+    public String getLocalNick() {
         return this.callListener.getLocalNick();
     }
-    public SocketAddress getRemoteAddress(){
+
+    public SocketAddress getRemoteAddress() {
         return this.callListener.getRemoteAddress();
     }
-    public String getRemoteNick(){
+
+    public String getRemoteNick() {
         return this.callListener.getRemoteNick();
     }
-    public boolean isBusy(){
+
+    public boolean isBusy() {
         return this.callListener.isBusy();
     }
-    public void setBusy(boolean busy){
+
+    public void setBusy(boolean busy) {
         this.callListener.setBusy(busy);
     }
-    public void setListenAddress(SocketAddress listenAddress){
+
+    public void setListenAddress(SocketAddress listenAddress) {
         this.callListener.setListenAddress(listenAddress);
     }
-    public void setLocalNick(String localNick){
+
+    public void setLocalNick(String localNick) {
         this.callListener.setLocalNick(localNick);
     }
+
     @Override
     public void run() {
-        while(true){
+        while (true) {
             callListener.getConnection();
         }
     }
-    public static void main(String[] args){}
+
+    public static void main(String[] args) {
+    }
 }

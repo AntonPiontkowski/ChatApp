@@ -8,38 +8,48 @@ public class CommandListenerThread extends Observable implements Runnable {
     private MessageCommand lastMessageCommand;
     private NickCommand lastNickCommand;
 
-    public CommandListenerThread(){
+    public CommandListenerThread() {
     }
-    public CommandListenerThread(Connection con){
+
+    public CommandListenerThread(Connection con) {
         this.connection = con;
     }
+
     @Override
     public void run() {
-        while (true){
-            try{
+        while (true) {
+            try {
                 this.lastCommand = connection.receive();
-            } catch (IOException e){
+            } catch (IOException e) {
                 //HANDLE EXCEPTION
             }
         }
     }
-    public Command getLastCommand(){
+
+    public Command getLastCommand() {
         return this.lastCommand;
     }
-    public String getMessage(){
+
+    public String getMessage() {
         return this.lastMessageCommand.message;
     }
-    public String getNick(){
+
+    public String getNick() {
         return this.lastNickCommand.nick;
     }
-    public boolean isDisconnected(){
+
+    public boolean isDisconnected() {
         return this.disconnected;
     }
-    public void start(){
+
+    public void start() {
         // ADD
     }
-    public void stop(){
+
+    public void stop() {
         // ADD
     }
-    public static void main(String[] args){}
+
+    public static void main(String[] args) {
+    }
 }
