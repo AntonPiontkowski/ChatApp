@@ -20,6 +20,10 @@ public class CommandListenerThread extends Observable implements Runnable {
         while (true) {
             try {
                 this.lastCommand = connection.receive();
+                // handle received command
+                this.setChanged();
+                this.notifyObservers();
+                this.clearChanged();
             } catch (IOException e) {
                 //HANDLE EXCEPTION
             }

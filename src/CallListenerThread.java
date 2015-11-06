@@ -51,6 +51,9 @@ public class CallListenerThread extends Observable implements Runnable {
     public void run() {
         while (true) {
             callListener.getConnection();
+            this.setChanged();
+            this.notifyObservers();
+            this.clearChanged();
         }
     }
 

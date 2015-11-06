@@ -38,7 +38,6 @@ public class Connection {
     }
 
     public synchronized String receiveMessage() {
-        Sound.INCOMING.play();
         return scanner.nextLine();
     }
 
@@ -53,7 +52,7 @@ public class Connection {
             info[1] = checking[4];
             return info;
         } else {
-            // handle the wrong greeting
+            this.reject();
             return null;
         }
     }
