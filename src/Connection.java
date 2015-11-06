@@ -18,7 +18,7 @@ public class Connection {
     }
 
     public synchronized void accept() {
-        this.printer.print("Accepted\n");
+        this.printer.print(Command.CommandType.ACCEPT.toString() + "\n");
         this.printer.flush();
     }
 
@@ -27,7 +27,7 @@ public class Connection {
     }
 
     public synchronized void disconnect() throws IOException {
-        this.printer.println("Disconnected\n");
+        this.printer.print(Command.CommandType.DISCONNECT.toString() + "\n");
         this.printer.flush();
         close();
     }
@@ -58,22 +58,22 @@ public class Connection {
     }
 
     public synchronized void reject() {
-        this.printer.print("Rejected\n");
+        this.printer.print(Command.CommandType.REJECT.toString());
     }
 
     public synchronized void sendMessage(String msg) {
-        this.printer.print("Message\n");
-        this.printer.println(msg);
+        this.printer.print(Command.CommandType.MESSAGE.toString() + "\n");
+        this.printer.print(msg + "\n");
         this.printer.flush();
     }
 
     public synchronized void sendNickBusy(String ver, String nick) {
-        this.printer.print(ver + " user " + nick + " busy!\n");
+        this.printer.print(ver + " user " + nick + " busy!" + "\n");
         this.printer.flush();
     }
 
     public synchronized void sendNickHello(String ver, String nick) {
-        this.printer.print(ver + " user " + nick + "!\n");
+        this.printer.print(ver + " user " + nick + "\n");
         this.printer.flush();
     }
 }

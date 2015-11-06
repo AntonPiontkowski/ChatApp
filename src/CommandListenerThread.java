@@ -28,20 +28,33 @@ public class CommandListenerThread extends Observable implements Runnable {
                     }
                     case DISCONNECT:{
                         this.connection.close();
+                        this.disconnected = true;
                         break;
                     }
                     case MESSAGE:{
-                        this.connection.receiveMessage();
+                        this.lastMessageCommand.message = connection.receiveMessage();
                         break;
                     }
                     case NICK:{
-                        this.connection.receiveNickVer();
+                        String[] info = this.connection.receiveNickVer();
+                        if (info != null){
+                            this.lastNickCommand.version = info[0];
+                            this.lastNickCommand.nick = info[1];
+                            this.disconnected = false;
+                        }
+                        else{
+                            this.connection.reject();
+                            this.disconnected = true;
+                        }
                         break;
                     }
                     case REJECT:{
+                        this.disconnected = true;
                         break;
                     }
                     default:{
+                        this.connection.reject();
+                        this.disconnected = true;
                         break;
                     }
                 }

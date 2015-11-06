@@ -25,32 +25,32 @@ public class Command {
         ACCEPT {
             @Override
             public String toString() {
-                return "Accepted\n";
+                return "Accepted";
             }
         },
 
         DISCONNECT {
             @Override
             public String toString() {
-                return "Disconnected\n";
+                return "Disconnected";
             }
         },
         MESSAGE {
             @Override
             public String toString() {
-                return "Message\n";
+                return "Message";
             }
         },
         NICK {
             @Override
             public String toString() {
-                return "Nick\n";
+                return "Nick";
             }
         },
         REJECT {
             @Override
             public String toString() {
-                return "Rejected\n";
+                return "Rejected";
             }
         }
     }

@@ -317,6 +317,7 @@ public class MainForm extends JFrame {
                             newMsg.setEditable(true);
                             disconnect.setEnabled(true);
                             remoteAddressText.setEnabled(true);
+                            // TODO CREATE A CommandListenerThread; ADD AN OBSERVER
                         }
                     }
                 } catch (Exception ex) {  // At this rate - all exceptions
@@ -356,6 +357,7 @@ public class MainForm extends JFrame {
 //                try {
                     if (localNickText.getText().equals("") | localNickText.getText().length() < MIN_NICK_LENGTH) {
                         localNickText.setText("unnamed");
+                        // TODO CREATE A CallListenerThread; ADD AN OBSERVER
                     }
                     if (localNickText.getText().length() > MIN_NICK_LENGTH && localNickText.getText().length() < MAX_NICK_LENGTH) {
                         if (!connect.isEnabled() && apply.isEnabled()) {
@@ -365,18 +367,7 @@ public class MainForm extends JFrame {
                         localNickText.setEnabled(false);
                         remoteAddressText.setEnabled(true);
                     }
-                    /*callListener = new CallListener(localNickText.getText(), InetAddress.getLocalHost().getHostAddress());
-                    callThread = new CallListenerThread(callListener);
-                    callThread.addObserver(new Observer() {
-                        @Override
-                        public void update(Observable o, Object arg) {
-                            // new JDialogue with a request to begin chat
-                        }
-                    });
-                     SwingUtilities.invokeLater(callListener)*/
-//                } catch (UnknownHostException e2) {
-//                    e2.printStackTrace();
-//                }
+
             }
 
             @Override
