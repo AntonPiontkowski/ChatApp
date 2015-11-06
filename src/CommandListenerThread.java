@@ -20,8 +20,32 @@ public class CommandListenerThread extends Observable implements Runnable {
         while (true) {
             try {
                 this.lastCommand = connection.receive();
+                switch (lastCommand.type){
+                    // TODO HANDLE ALL THE POSSIBLE VARIANTS
+                    case ACCEPT:{
+
+                    }
+                    case DISCONNECT:{
+
+                    }
+                    case MESSAGE:{
+
+                    }
+                    case NICK:{
+
+                    }
+                    case REJECT:{
+
+                    }
+                    default:{
+
+                    }
+                }
+                this.setChanged();
+                this.notifyObservers();
+                this.clearChanged();
             } catch (IOException e) {
-                //HANDLE EXCEPTION
+                // TODO HANDLE EXCEPTION
             }
         }
     }
@@ -43,11 +67,11 @@ public class CommandListenerThread extends Observable implements Runnable {
     }
 
     public void start() {
-        // ADD
+        // TODO
     }
 
-    public void stop() {
-        // ADD
+    public void stop() throws InterruptedException{
+        // TODO
     }
 
     public static void main(String[] args) {

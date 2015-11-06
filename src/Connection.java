@@ -13,12 +13,13 @@ public class Connection {
 
     public Connection(Socket s) throws IOException {
         this.socket = s;
-        this.printer = new PrintWriter(new OutputStreamWriter(s.getOutputStream(), "UTF-8"), true);
+        this.printer = new PrintWriter(new OutputStreamWriter(s.getOutputStream(), "UTF-8"));
         this.scanner = new Scanner(s.getInputStream());
     }
 
     public synchronized void accept() {
         this.printer.print("Accepted\n");
+        this.printer.flush();
     }
 
     public void close() throws IOException {
@@ -27,18 +28,16 @@ public class Connection {
 
     public synchronized void disconnect() throws IOException {
         this.printer.println("Disconnected\n");
+        this.printer.flush();
         close();
     }
 
     public synchronized Command receive() throws IOException {
         String command = this.scanner.nextLine();
-        return null;
-        // FIRSTLY EDIT COMMAND NESTED CLASS
-        // add "transformation" from <String> to <Command>
+        return new Command(Command.getType(command));
     }
 
     public synchronized String receiveMessage() {
-        Sound.INCOMING.play();
         return scanner.nextLine();
     }
 
@@ -53,7 +52,7 @@ public class Connection {
             info[1] = checking[4];
             return info;
         } else {
-            // handle the wrong greeting
+            this.reject();
             return null;
         }
     }
@@ -65,14 +64,16 @@ public class Connection {
     public synchronized void sendMessage(String msg) {
         this.printer.print("Message\n");
         this.printer.println(msg);
+        this.printer.flush();
     }
 
     public synchronized void sendNickBusy(String ver, String nick) {
-        this.printer.print(ver + " user <" + nick + "> busy!\n");
+        this.printer.print(ver + " user " + nick + " busy!\n");
+        this.printer.flush();
     }
 
     public synchronized void sendNickHello(String ver, String nick) {
-        this.printer.print(nick + "\n");
-        this.printer.print(ver + " user <" + nick + ">!\n");
+        this.printer.print(ver + " user " + nick + "!\n");
+        this.printer.flush();
     }
 }
