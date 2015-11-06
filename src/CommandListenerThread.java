@@ -20,31 +20,31 @@ public class CommandListenerThread extends Observable implements Runnable {
         while (true) {
             try {
                 this.lastCommand = connection.receive();
-<<<<<<< HEAD
                 switch (lastCommand.type){
                     // TODO HANDLE ALL THE POSSIBLE VARIANTS
                     case ACCEPT:{
-
+                        this.disconnected = false;
+                        break;
                     }
                     case DISCONNECT:{
-
+                        this.connection.close();
+                        break;
                     }
                     case MESSAGE:{
-
+                        this.connection.receiveMessage();
+                        break;
                     }
                     case NICK:{
-
+                        this.connection.receiveNickVer();
+                        break;
                     }
                     case REJECT:{
-
+                        break;
                     }
                     default:{
-
+                        break;
                     }
                 }
-=======
-                // handle received command
->>>>>>> 2a542e29c9322dbb38bef6eaae83e9568dd62ef7
                 this.setChanged();
                 this.notifyObservers();
                 this.clearChanged();

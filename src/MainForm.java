@@ -318,23 +318,6 @@ public class MainForm extends JFrame {
                             disconnect.setEnabled(true);
                             remoteAddressText.setEnabled(true);
                         }
-                        /*commandThread = new CommandListenerThread(connection);
-                        commandThread.addObserver(new Observer() {
-                            @Override
-                            public void update(Observable o, Object arg) {
-                                if (commandThread.getLastCommand().type.name().equals(Command.CommandType.MESSAGE.name())) {
-                                    Sound.INCOMING.play();
-                                    messagingArea.append(remoteNickText.getText() + ":" + commandThread.getMessage() + "\n");
-                                }
-                                else if (commandThread.getLastCommand().type.name().equals(Command.CommandType.NICK.name()))
-                                    remoteNickText.setText(commandThread.getNick());
-                                else {
-                                    messagingArea.append(commandThread.getLastCommand().type.toString() + "\n");
-                                }
-
-                            }
-                        });
-                        SwingUtilities.invokeLater(commandThread);*/
                     }
                 } catch (Exception ex) {  // At this rate - all exceptions
                     ex.printStackTrace();
