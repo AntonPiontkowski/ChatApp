@@ -318,7 +318,7 @@ public class MainForm extends JFrame {
                             disconnect.setEnabled(true);
                             remoteAddressText.setEnabled(true);
                         }
-                        commandThread = new CommandListenerThread(connection);
+                        /*commandThread = new CommandListenerThread(connection);
                         commandThread.addObserver(new Observer() {
                             @Override
                             public void update(Observable o, Object arg) {
@@ -334,7 +334,7 @@ public class MainForm extends JFrame {
 
                             }
                         });
-                        SwingUtilities.invokeLater(commandThread);
+                        SwingUtilities.invokeLater(commandThread);*/
                     }
                 } catch (Exception ex) {  // At this rate - all exceptions
                     ex.printStackTrace();
