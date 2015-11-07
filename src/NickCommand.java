@@ -9,4 +9,5 @@ public class NickCommand extends Command {
         this.nick = nick;
         this.busy = busy;
     }
+    public NickCommand(){}
 }

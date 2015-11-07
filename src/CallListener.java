@@ -1,15 +1,16 @@
+import com.sun.corba.se.spi.activation.Server;
+
 import java.io.IOException;
 import java.net.*;
 
 public class CallListener {
     private static final int PORT = 28411;
+    private static final String VER = "ChatApp 2015";
     private boolean busy;
     private SocketAddress listenAddress;
     private String localNick;
     private SocketAddress remoteAddress;
     private String remoteNick;
-    Connection connection;
-    Socket socket;
 
     public CallListener() {
     }
@@ -27,10 +28,18 @@ public class CallListener {
     public Connection getConnection() {
         try {
             ServerSocket serverSocket = new ServerSocket(PORT);
-            socket = serverSocket.accept();
-            return new Connection(socket);
-        } catch (IOException e) {
-            // JDialogue with exception
+            Socket socket = serverSocket.accept();
+            Connection connection = new Connection(socket);
+            if (busy){
+                connection.sendNickBusy(VER,this.localNick);
+                connection.close();
+                return null;
+            }
+            else {
+                return connection;
+            }
+        } catch (IOException e){
+            e.printStackTrace();
             return null;
         }
     }
@@ -49,10 +58,6 @@ public class CallListener {
 
     public String getRemoteNick() {
         return this.remoteNick;
-    }
-
-    public Socket getSocket() {
-        return this.socket;
     }
 
     public boolean isBusy() {

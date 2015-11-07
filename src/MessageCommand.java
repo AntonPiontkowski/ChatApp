@@ -5,5 +5,5 @@ public class MessageCommand extends Command {
     public MessageCommand(String message) {
         this.message = message;
     }
-
+    public MessageCommand(){}
 }

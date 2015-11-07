@@ -17,7 +17,7 @@ public class Connection {
         this.scanner = new Scanner(s.getInputStream());
     }
 
-    public synchronized void accept() {
+    public void accept() {
         this.printer.print(Command.CommandType.ACCEPT.toString() + "\n");
         this.printer.flush();
     }
@@ -26,22 +26,22 @@ public class Connection {
         socket.close();
     }
 
-    public synchronized void disconnect() throws IOException {
+    public void disconnect() throws IOException {
         this.printer.print(Command.CommandType.DISCONNECT.toString() + "\n");
         this.printer.flush();
         close();
     }
 
-    public synchronized Command receive() throws IOException {
+    public Command receive() throws IOException {
         String command = this.scanner.nextLine();
         return new Command(Command.getType(command));
     }
 
-    public synchronized String receiveMessage() {
+    public String receiveMessage() {
         return scanner.nextLine();
     }
 
-    public synchronized String[] receiveNickVer() {
+    public String[] receiveNickVer() {
         String line = scanner.nextLine();
         String[] checking = line.split(" ");
         /*checking for the right answer
@@ -57,22 +57,22 @@ public class Connection {
         }
     }
 
-    public synchronized void reject() {
+    public void reject() {
         this.printer.print(Command.CommandType.REJECT.toString());
     }
 
-    public synchronized void sendMessage(String msg) {
+    public void sendMessage(String msg) {
         this.printer.print(Command.CommandType.MESSAGE.toString() + "\n");
         this.printer.print(msg + "\n");
         this.printer.flush();
     }
 
-    public synchronized void sendNickBusy(String ver, String nick) {
-        this.printer.print(ver + " user " + nick + " busy!" + "\n");
+    public void sendNickBusy(String ver, String nick) {
+        this.printer.print(ver + " user " + nick + " busy" + "\n");
         this.printer.flush();
     }
 
-    public synchronized void sendNickHello(String ver, String nick) {
+    public void sendNickHello(String ver, String nick) {
         this.printer.print(ver + " user " + nick + "\n");
         this.printer.flush();
     }

@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.util.Observable;
+import java.util.Observer;
 
 public class CommandListenerThread extends Observable implements Runnable {
     private Connection connection;
@@ -13,6 +14,9 @@ public class CommandListenerThread extends Observable implements Runnable {
 
     public CommandListenerThread(Connection con) {
         this.connection = con;
+        this.lastCommand = new Command();
+        this.lastMessageCommand = new MessageCommand();
+        this.lastNickCommand = new NickCommand();
     }
 
     @Override
@@ -58,9 +62,9 @@ public class CommandListenerThread extends Observable implements Runnable {
                         break;
                     }
                 }
-                this.setChanged();
-                this.notifyObservers();
-                this.clearChanged();
+                super.setChanged();
+                super.notifyObservers();
+                super.clearChanged();
             } catch (IOException e) {
                 // TODO HANDLE EXCEPTION
             }
@@ -81,6 +85,10 @@ public class CommandListenerThread extends Observable implements Runnable {
 
     public boolean isDisconnected() {
         return this.disconnected;
+    }
+
+    @Override
+    public synchronized void addObserver(Observer o) {
     }
 
     public void start() {

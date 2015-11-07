@@ -14,10 +14,10 @@ import java.util.Observer;
 
 public class MainForm extends JFrame {
     private Caller caller;
-    private Connection connection;
-    private CallListener callListener;
-    private CommandListenerThread commandThread;
-    private CallListenerThread callThread;
+    private volatile Connection connection;
+    private volatile CallListener callListener;
+    private volatile CommandListenerThread commandThread;
+    private volatile CallListenerThread callThread;
     private int xMouse;
     private int yMouse;
 
@@ -25,6 +25,7 @@ public class MainForm extends JFrame {
     private static final int MAX_NICK_LENGTH = 15;
     private static final int MIN_NICK_LENGTH = 3;
     private static final int PORT = 28411;
+    private static final String VER = "ChatApp 2015";
 
     final JLabel close;
     final JLabel tray;
@@ -357,7 +358,6 @@ public class MainForm extends JFrame {
 //                try {
                     if (localNickText.getText().equals("") | localNickText.getText().length() < MIN_NICK_LENGTH) {
                         localNickText.setText("unnamed");
-                        // TODO CREATE A CallListenerThread; ADD AN OBSERVER
                     }
                     if (localNickText.getText().length() > MIN_NICK_LENGTH && localNickText.getText().length() < MAX_NICK_LENGTH) {
                         if (!connect.isEnabled() && apply.isEnabled()) {
@@ -367,7 +367,7 @@ public class MainForm extends JFrame {
                         localNickText.setEnabled(false);
                         remoteAddressText.setEnabled(true);
                     }
-
+                   // TODO CREATE A CallListenerThread; ADD AN OBSERVER
             }
 
             @Override
