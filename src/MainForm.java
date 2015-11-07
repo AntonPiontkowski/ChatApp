@@ -323,11 +323,38 @@ public class MainForm extends JFrame {
                             commandThread.addObserver(new Observer() {
                                 @Override
                                 public void update(Observable o, Object arg) {
-                                    messagingArea.append("Received : " + commandThread.getMessage() + "\n");
+                                    switch (commandThread.getLastCommand()){
+                                        case ACCEPT:{
+                                            messagingArea.append(commandThread.getLastCommand().toString() + "\n");
+                                        }
+                                        case REJECT:{
+                                            messagingArea.append(commandThread.getLastCommand().toString() + "\n");
+                                        }
+                                        case MESSAGE:{
+                                            Sound.INCOMING.play();
+                                            messagingArea.append(remoteNickText.getText() + " : "
+                                                    + commandThread.getMessage() + "\n");
+                                        }
+                                        case DISCONNECT:{
+                                            messagingArea.append("Disconnected" + "\n");
+                                        }
+                                        case NICK:{
+                                            if (commandThread.getLastNickCommand().busy == true) {
+                                                remoteNickText.setText(commandThread.getNick());
+                                                messagingArea.append(commandThread.getMessage() + "\n");
+                                            }else{
+                                                messagingArea.append(commandThread.getMessage() + "\n");
+                                                disconnect.setEnabled(false);
+                                                connect.setEnabled(true);
+                                                remoteAddressText.setEnabled(true);
+                                                newMsg.setEditable(false);
+                                            }
+                                        }
+                                    }
                                 }
                             });
-                            Thread threadCom = new Thread(commandThread);
-                            threadCom.start();
+                            Thread t = new Thread(commandThread);
+                            t.start();
                         }
                     }
                 } catch (Exception ex) {  // At this rate - all exceptions

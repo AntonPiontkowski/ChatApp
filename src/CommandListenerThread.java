@@ -43,11 +43,13 @@ public class CommandListenerThread extends Observable implements Runnable {
                     case NICK:{
                         String[] info = this.connection.receiveNickVer();
                         if (info != null){
+                            this.lastNickCommand.busy = false;
                             this.lastNickCommand.version = info[0];
                             this.lastNickCommand.nick = info[1];
                             this.disconnected = false;
                         }
                         else if (info.length == 5){
+                            this.lastNickCommand.busy = true;
                             this.lastMessageCommand.message = Caller.CallStatus.BUSY.name();
                             this.connection.close();
                             this.disconnected = true;
@@ -84,6 +86,10 @@ public class CommandListenerThread extends Observable implements Runnable {
     }
     public Command.CommandType getLastCommand() {
         return this.lastCommand.type;
+    }
+
+    public NickCommand getLastNickCommand(){
+        return this.lastNickCommand;
     }
 
     public String getMessage() {

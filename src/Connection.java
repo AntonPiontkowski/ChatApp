@@ -68,11 +68,13 @@ public class Connection {
     }
 
     public void sendNickBusy(String ver, String nick) {
+        this.printer.print(Command.CommandType.NICK.toString());
         this.printer.print(ver + " user " + nick + " busy" + "\n");
         this.printer.flush();
     }
 
     public void sendNickHello(String ver, String nick) {
+        this.printer.print(Command.CommandType.NICK.toString());
         this.printer.print(ver + " user " + nick + "\n");
         this.printer.flush();
     }

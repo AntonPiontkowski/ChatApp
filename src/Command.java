@@ -32,7 +32,7 @@ public class Command {
         DISCONNECT {
             @Override
             public String toString() {
-                return "Disconnected";
+                return "Disconnect";
             }
         },
         MESSAGE {
