@@ -319,6 +319,15 @@ public class MainForm extends JFrame {
                             disconnect.setEnabled(true);
                             remoteAddressText.setEnabled(true);
                             // TODO CREATE A CommandListenerThread; ADD AN OBSERVER
+                            commandThread = new CommandListenerThread(connection);
+                            commandThread.addObserver(new Observer() {
+                                @Override
+                                public void update(Observable o, Object arg) {
+                                    messagingArea.append("Received : " + commandThread.getMessage() + "\n");
+                                }
+                            });
+                            Thread threadCom = new Thread(commandThread);
+                            threadCom.start();
                         }
                     }
                 } catch (Exception ex) {  // At this rate - all exceptions

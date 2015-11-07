@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.NoSuchElementException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -46,7 +47,12 @@ public class CommandListenerThread extends Observable implements Runnable {
                             this.lastNickCommand.nick = info[1];
                             this.disconnected = false;
                         }
-                        else{
+                        else if (info.length == 5){
+                            this.lastMessageCommand.message = Caller.CallStatus.BUSY.name();
+                            this.connection.close();
+                            this.disconnected = true;
+                        }
+                        else {
                             this.connection.reject();
                             this.disconnected = true;
                         }
@@ -62,17 +68,22 @@ public class CommandListenerThread extends Observable implements Runnable {
                         break;
                     }
                 }
-                super.setChanged();
-                super.notifyObservers();
-                super.clearChanged();
-            } catch (IOException e) {
+                this.setChanged();
+                this.notifyObservers();
+                this.clearChanged();
+            }
+            catch (IOException e) {
                 // TODO HANDLE EXCEPTION
+                this.disconnected = true;
+            }
+            catch (NoSuchElementException e2){
+                // TODO HANDLE EXCEPTION
+                this.disconnected = true;
             }
         }
     }
-
-    public Command getLastCommand() {
-        return this.lastCommand;
+    public Command.CommandType getLastCommand() {
+        return this.lastCommand.type;
     }
 
     public String getMessage() {
@@ -87,16 +98,12 @@ public class CommandListenerThread extends Observable implements Runnable {
         return this.disconnected;
     }
 
-    @Override
-    public synchronized void addObserver(Observer o) {
-    }
-
     public void start() {
-        // TODO
+        // TODO IF THERE WILL BE A NEED
     }
 
     public void stop() throws InterruptedException{
-        // TODO
+        // TODO IF THERE WILL BE A NEED
     }
 
     public static void main(String[] args) {
