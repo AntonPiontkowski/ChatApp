@@ -58,7 +58,7 @@ public class Connection {
     }
 
     public void reject() {
-        this.printer.print(Command.CommandType.REJECT.toString());
+        this.printer.print(Command.CommandType.REJECT.toString() + "\n");
     }
 
     public void sendMessage(String msg) {
@@ -68,13 +68,13 @@ public class Connection {
     }
 
     public void sendNickBusy(String ver, String nick) {
-        this.printer.print(Command.CommandType.NICK.toString());
+        this.printer.print(Command.CommandType.NICK.toString() + "\n");
         this.printer.print(ver + " user " + nick + " busy" + "\n");
         this.printer.flush();
     }
 
     public void sendNickHello(String ver, String nick) {
-        this.printer.print(Command.CommandType.NICK.toString());
+        this.printer.print(Command.CommandType.NICK.toString() + "\n");
         this.printer.print(ver + " user " + nick + "\n");
         this.printer.flush();
     }

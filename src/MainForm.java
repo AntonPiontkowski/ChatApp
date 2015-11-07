@@ -317,7 +317,6 @@ public class MainForm extends JFrame {
                             remoteAddressText.setEnabled(false);
                             newMsg.setEditable(true);
                             disconnect.setEnabled(true);
-                            remoteAddressText.setEnabled(true);
                             // TODO CREATE A CommandListenerThread; ADD AN OBSERVER
                             commandThread = new CommandListenerThread(connection);
                             commandThread.addObserver(new Observer() {
@@ -326,17 +325,31 @@ public class MainForm extends JFrame {
                                     switch (commandThread.getLastCommand()){
                                         case ACCEPT:{
                                             messagingArea.append(commandThread.getLastCommand().toString() + "\n");
+                                            break;
                                         }
                                         case REJECT:{
                                             messagingArea.append(commandThread.getLastCommand().toString() + "\n");
+                                            messagingArea.append(commandThread.getMessage() + "\n");
+                                            disconnect.setEnabled(false);
+                                            connect.setEnabled(true);
+                                            remoteAddressText.setEnabled(true);
+                                            newMsg.setEditable(false);
+                                            break;
                                         }
                                         case MESSAGE:{
                                             Sound.INCOMING.play();
                                             messagingArea.append(remoteNickText.getText() + " : "
                                                     + commandThread.getMessage() + "\n");
+                                            break;
                                         }
                                         case DISCONNECT:{
                                             messagingArea.append("Disconnected" + "\n");
+                                            messagingArea.append(commandThread.getMessage() + "\n");
+                                            disconnect.setEnabled(false);
+                                            connect.setEnabled(true);
+                                            remoteAddressText.setEnabled(true);
+                                            newMsg.setEditable(false);
+                                            break;
                                         }
                                         case NICK:{
                                             if (commandThread.getLastNickCommand().busy == true) {
@@ -349,6 +362,7 @@ public class MainForm extends JFrame {
                                                 remoteAddressText.setEnabled(true);
                                                 newMsg.setEditable(false);
                                             }
+                                            break;
                                         }
                                     }
                                 }
