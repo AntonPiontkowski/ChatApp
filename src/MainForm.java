@@ -10,6 +10,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 
 public class MainForm extends JFrame {
@@ -38,6 +41,8 @@ public class MainForm extends JFrame {
     final JLabel apply;
     final JTextArea newMsg;
     final JTextArea messagingArea;
+
+    SwingWorker worker;
 
     public MainForm() {
         setBounds(200, 100, 700, 400);
@@ -310,7 +315,36 @@ public class MainForm extends JFrame {
                         caller = new Caller(localNickText.getText(), remoteAddressText.getText());
                     else
                         caller.setRemoteAddress(new InetSocketAddress(remoteAddressText.getText(), PORT));
-                    connection = caller.call();
+
+                    worker = new SwingWorker<Connection, Void>() {
+                        @Override
+                        public Connection doInBackground() throws Exception {
+                            connect.setEnabled(false);
+                            remoteAddressText.setEditable(false);
+                            Connection innerConnection = caller.call();
+                            return innerConnection;
+                        }
+                        @Override
+                        public void done(){
+                            try {
+                                connection = get(Long.valueOf(10), TimeUnit.SECONDS);
+                                if (connection == null) {
+                                    connect.setEnabled(true);
+                                    remoteAddressText.setEditable(true);
+                                }
+                            }catch(ExecutionException ex){
+                                connection = null;
+                                //TODO Handle Exception
+                            }catch (InterruptedException ex){
+                                connection = null;
+                                //TODO Handle Exception
+                            }catch (TimeoutException ex){
+                                connection = null;
+                                //TODO Handle Exception
+                            }
+                        }
+                    };
+                    worker.execute();
                     if (connection != null) {
                         if (connect.isEnabled()) {
                             connect.setEnabled(false);
@@ -499,8 +533,14 @@ public class MainForm extends JFrame {
     }
 
     public static void main(String[] args) {
-        MainForm mainForm = new MainForm();
-        mainForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainForm.setVisible(true);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                MainForm mainForm = new MainForm();
+                mainForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                mainForm.setVisible(true);
+            }
+        });
+
     }
 }
