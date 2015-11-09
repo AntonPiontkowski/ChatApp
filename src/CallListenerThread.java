@@ -7,6 +7,8 @@ import java.util.Scanner;
 
 public class CallListenerThread extends Observable implements Runnable {
     private CallListener callListener;
+    private Connection lastRequest;
+    private static final String VER = "ChatApp 2015";
 
     public CallListenerThread() {
     }
@@ -46,9 +48,20 @@ public class CallListenerThread extends Observable implements Runnable {
     public void setLocalNick(String localNick) {
         this.callListener.setLocalNick(localNick);
     }
-
+    public Connection getLastRequest(){
+        return this.lastRequest;
+    }
     @Override
     public void run() {
+        while (true){
+            if (isBusy() != true){
+                lastRequest = callListener.getConnection();
+                setBusy(true);
+                setChanged();
+                notifyObservers();
+                clearChanged();
+            }
+        }
     }
 
     public static void main(String[] args) {

@@ -32,7 +32,7 @@ public class Connection {
         close();
     }
 
-    public Command receive() throws IOException {
+    public Command receive(){
         String command = this.scanner.nextLine();
         return new Command(Command.getType(command));
     }
@@ -44,8 +44,7 @@ public class Connection {
     public String[] receiveNickVer() {
         String line = scanner.nextLine();
         String[] checking = line.split(" ");
-        /*checking for the right answer
-        from another user        */
+//        Checking if the pal's HelloMessage is right
         if ((checking[0].equals("ChatApp")) & (checking[1].equals("2015")) & (checking[2].equals("user"))) {
             String[] info = new String[2];
             info[0] = checking[0] + " " + checking[1];

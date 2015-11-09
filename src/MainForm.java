@@ -241,16 +241,11 @@ public class MainForm extends JFrame {
                     connection.disconnect();
                 } catch (IOException ex) {
                 }
-
-                disconnect.setEnabled(false);
-                connect.setEnabled(true);
-                remoteAddressText.setEnabled(true);
-                newMsg.setEditable(false);
-                messagingArea.setText("");
-                if (!remoteAddressText.getText().equals(""))
-                    remoteAddressText.setText("");
-                if (!remoteNickText.getText().equals(""))
-                    remoteNickText.setText("");
+                try {
+                    disconnecting();
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
             }
 
             @Override
@@ -310,104 +305,47 @@ public class MainForm extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (connect.isEnabled()) Sound.CLICK.play();
-                try {
                     if (caller == null)
                         caller = new Caller(localNickText.getText(), remoteAddressText.getText());
                     else
                         caller.setRemoteAddress(new InetSocketAddress(remoteAddressText.getText(), PORT));
-
-                    worker = new SwingWorker<Connection, Void>() {
-                        @Override
-                        public Connection doInBackground() throws Exception {
-                            connect.setEnabled(false);
-                            remoteAddressText.setEditable(false);
-                            Connection innerConnection = caller.call();
-                            return innerConnection;
-                        }
-                        @Override
-                        public void done(){
-                            try {
-                                connection = get(Long.valueOf(10), TimeUnit.SECONDS);
-                                if (connection == null) {
-                                    connect.setEnabled(true);
-                                    remoteAddressText.setEditable(true);
-                                }
-                            }catch(ExecutionException ex){
-                                connection = null;
-                                //TODO Handle Exception
-                            }catch (InterruptedException ex){
-                                connection = null;
-                                //TODO Handle Exception
-                            }catch (TimeoutException ex){
-                                connection = null;
-                                //TODO Handle Exception
-                            }
-                        }
-                    };
-                    worker.execute();
+                      // TODO EDIT
+//                    worker = new SwingWorker<Connection, Void>() {
+//                        @Override
+//                        public Connection doInBackground() throws Exception {
+//                            connecting();
+//                            Connection innerConnection = caller.call();
+//                            return innerConnection;
+//                        }
+//                        @Override
+//                        public void done(){
+//                            try {
+//                                connection = get(Long.valueOf(10), TimeUnit.SECONDS);
+//                                if (connection == null) {
+//                                    disconnecting();
+//                                }
+//                            }catch(ExecutionException ex){
+//                                connection = null;
+//                                //TODO Handle Exception
+//                            }catch (InterruptedException ex){
+//                                connection = null;
+//                                //TODO Handle Exception
+//                            }catch (TimeoutException ex){
+//                                connection = null;
+//                                //TODO Handle Exception
+//                            }
+//                        }
+//                    };
+//                    worker.execute();
+                    connection = caller.call();
                     if (connection != null) {
                         if (connect.isEnabled()) {
-                            connect.setEnabled(false);
-                            remoteAddressText.setEnabled(false);
-                            newMsg.setEditable(true);
-                            disconnect.setEnabled(true);
                             // TODO CREATE A CommandListenerThread; ADD AN OBSERVER
-                            commandThread = new CommandListenerThread(connection);
-                            commandThread.addObserver(new Observer() {
-                                @Override
-                                public void update(Observable o, Object arg) {
-                                    switch (commandThread.getLastCommand()){
-                                        case ACCEPT:{
-                                            messagingArea.append(commandThread.getLastCommand().toString() + "\n");
-                                            break;
-                                        }
-                                        case REJECT:{
-                                            messagingArea.append(commandThread.getLastCommand().toString() + "\n");
-                                            messagingArea.append(commandThread.getMessage() + "\n");
-                                            disconnect.setEnabled(false);
-                                            connect.setEnabled(true);
-                                            remoteAddressText.setEnabled(true);
-                                            newMsg.setEditable(false);
-                                            break;
-                                        }
-                                        case MESSAGE:{
-                                            Sound.INCOMING.play();
-                                            messagingArea.append(remoteNickText.getText() + " : "
-                                                    + commandThread.getMessage() + "\n");
-                                            break;
-                                        }
-                                        case DISCONNECT:{
-                                            messagingArea.append("Disconnected" + "\n");
-                                            messagingArea.append(commandThread.getMessage() + "\n");
-                                            disconnect.setEnabled(false);
-                                            connect.setEnabled(true);
-                                            remoteAddressText.setEnabled(true);
-                                            newMsg.setEditable(false);
-                                            break;
-                                        }
-                                        case NICK:{
-                                            if (commandThread.getLastNickCommand().busy == true) {
-                                                remoteNickText.setText(commandThread.getNick());
-                                                messagingArea.append(commandThread.getMessage() + "\n");
-                                            }else{
-                                                messagingArea.append(commandThread.getMessage() + "\n");
-                                                disconnect.setEnabled(false);
-                                                connect.setEnabled(true);
-                                                remoteAddressText.setEnabled(true);
-                                                newMsg.setEditable(false);
-                                            }
-                                            break;
-                                        }
-                                    }
-                                }
-                            });
-                            Thread t = new Thread(commandThread);
-                            t.start();
+                            connecting();
+                            listenCommands();
+                            commandThread.start();
                         }
                     }
-                } catch (Exception ex) {  // At this rate - all exceptions
-                    ex.printStackTrace();
-                }
             }
 
             @Override
@@ -438,8 +376,8 @@ public class MainForm extends JFrame {
         apply.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (apply.isEnabled()) Sound.CLICK.play();
-//                try {
+                try{
+                    if (apply.isEnabled()) Sound.CLICK.play();
                     if (localNickText.getText().equals("") | localNickText.getText().length() < MIN_NICK_LENGTH) {
                         localNickText.setText("unnamed");
                     }
@@ -451,7 +389,24 @@ public class MainForm extends JFrame {
                         localNickText.setEnabled(false);
                         remoteAddressText.setEnabled(true);
                     }
-                   // TODO CREATE A CallListenerThread; ADD AN OBSERVER
+                    // TODO CREATE A CallListenerThread; ADD AN OBSERVER
+                    callListener = new CallListener(localNickText.getText());
+                    callThread = new CallListenerThread(callListener);
+                    callThread.addObserver(new Observer() {
+                        @Override
+                        public void update(Observable o, Object arg) {
+                            connecting();
+                            connection = callThread.getLastRequest();
+                            listenCommands();
+                            commandThread.start();
+                        }
+                    });
+                    Thread t2 = new Thread(callThread);
+                    t2.start();
+                }
+                catch (UnknownHostException e3){
+                    e3.printStackTrace();
+                }
             }
 
             @Override
@@ -531,7 +486,88 @@ public class MainForm extends JFrame {
         apply.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
     }
-
+//    Method was created to avoid copying the code
+    public void connecting(){
+        connect.setEnabled(false);
+        remoteAddressText.setEnabled(false);
+        newMsg.setEditable(true);
+        disconnect.setEnabled(true);
+    }
+//    Method was created to avoid copying the code
+    public void disconnecting() throws InterruptedException {
+        disconnect.setEnabled(false);
+        connect.setEnabled(true);
+        remoteAddressText.setEnabled(true);
+        newMsg.setEditable(false);
+        messagingArea.setText("");
+        remoteAddressText.setText("");
+        remoteNickText.setText("");
+        if (commandThread != null)
+            commandThread.stop();
+        if (callThread != null)
+            callThread.setBusy(false);
+    }
+//    Method was created to avoid copying the code
+    public void listenCommands(){
+        if (commandThread != null)
+            try{
+                commandThread.stop();
+            }
+            catch (InterruptedException e){
+                // TODO HANDLE EXCEPTION
+                e.printStackTrace();
+            }
+        commandThread = new CommandListenerThread(connection);
+        commandThread.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                switch (commandThread.getLastCommand()){
+                    case ACCEPT:{
+                        messagingArea.append(commandThread.getLastCommand().toString() + "\n");
+                        break;
+                    }
+                    case REJECT:{
+                        messagingArea.append(commandThread.getLastCommand().toString() + "\n");
+                        try {
+                            disconnecting();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+                    case MESSAGE:{
+                        Sound.INCOMING.play();
+                        messagingArea.append(remoteNickText.getText() + " : "
+                                + commandThread.getMessage() + "\n");
+                        break;
+                    }
+                    case DISCONNECT:{
+                        messagingArea.append("Disconnected" + "\n");
+                        try {
+                            disconnecting();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+                    case NICK:{
+                        if (commandThread.getLastNickCommand().busy == true) {
+                            remoteNickText.setText(commandThread.getNick());
+                            messagingArea.append(commandThread.getMessage() + "\n");
+                        }else{
+                            messagingArea.append(commandThread.getMessage() + "\n");
+                            try {
+                                disconnecting();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        });
+    }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override

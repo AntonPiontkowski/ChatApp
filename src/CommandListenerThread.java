@@ -7,9 +7,10 @@ import java.util.Observer;
 public class CommandListenerThread extends Observable implements Runnable {
     private Connection connection;
     private boolean disconnected;
-    private Command lastCommand;
+    private volatile Command lastCommand;
     private MessageCommand lastMessageCommand;
     private NickCommand lastNickCommand;
+    private Thread t;
 
     public CommandListenerThread() {
     }
@@ -23,7 +24,7 @@ public class CommandListenerThread extends Observable implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (!isDisconnected()) {
             try {
                 this.lastCommand = connection.receive();
                 switch (lastCommand.type){
@@ -39,6 +40,7 @@ public class CommandListenerThread extends Observable implements Runnable {
                     }
                     case MESSAGE:{
                         this.lastMessageCommand.message = connection.receiveMessage();
+                        System.out.println(lastMessageCommand.message);
                         break;
                     }
                     case NICK:{
@@ -77,11 +79,13 @@ public class CommandListenerThread extends Observable implements Runnable {
             }
             catch (IOException e) {
                 // TODO HANDLE EXCEPTION
+                e.printStackTrace();
                 this.disconnected = true;
             }
             catch (NoSuchElementException e2){
                 // TODO HANDLE EXCEPTION
                 this.disconnected = true;
+                e2.printStackTrace();
             }
         }
     }
@@ -106,13 +110,13 @@ public class CommandListenerThread extends Observable implements Runnable {
     }
 
     public void start() {
-        // TODO IF THERE WILL BE A NEED
+        this.disconnected = false;
+        this.t = new Thread(this);
+        t.start();
     }
 
     public void stop() throws InterruptedException{
-        // TODO IF THERE WILL BE A NEED
+        this.disconnected = true;
     }
 
-    public static void main(String[] args) {
-    }
 }
