@@ -13,6 +13,7 @@ import java.util.Observer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.Scanner;
 
 
 public class MainForm extends JFrame {
@@ -397,10 +398,43 @@ public class MainForm extends JFrame {
                     callThread.addObserver(new Observer() {
                         @Override
                         public void update(Observable o, Object arg) {
-                            connecting();
+                            /*
+                            Temporary.
+                            Instead of scanner and console will be JDialog
+                             */
                             connection = callThread.getLastRequest();
-                            listenCommands();
-                            commandThread.start();
+
+//                            if (connection.receiveNickVer() != null){
+//                                remoteNickText.setText(connection.receiveNickVer()[1]);
+//                                connection.sendNickHello(VER, localNickText.getText());
+
+                                System.out.println("1. Accept");
+                                System.out.println("2. Reject");
+                                Scanner scanner = new Scanner(System.in);
+                                int choice = scanner.nextInt();
+                                switch(choice){
+                                    case 1: {
+
+                                        if (connection != null){
+                                            try {
+                                                connection.disconnect();
+                                            }catch (IOException ex){
+                                                //TODO Handle Exception
+                                            }
+                                        }
+
+                                        connection.accept();
+                                        listenCommands();
+                                        commandThread.start();
+                                        connecting();
+                                        break;
+                                    }
+                                    case 2:{
+                                        connection.reject();
+                                        break;
+                                    }
+                                //}
+                            }
                         }
                     });
                     Thread t2 = new Thread(callThread);
