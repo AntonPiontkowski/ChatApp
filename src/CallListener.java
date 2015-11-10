@@ -30,15 +30,14 @@ public class CallListener {
             ServerSocket serverSocket = new ServerSocket(PORT);
             Socket socket = serverSocket.accept();
             Connection connection = new Connection(socket);
-            if (busy){
-                connection.sendNickBusy(VER,this.localNick);
+            if (busy) {
+                connection.sendNickBusy(VER, this.localNick);
                 connection.close();
                 return null;
-            }
-            else {
+            } else {
                 return connection;
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }

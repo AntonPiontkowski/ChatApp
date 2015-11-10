@@ -27,47 +27,45 @@ public class CommandListenerThread extends Observable implements Runnable {
         while (!isDisconnected()) {
             try {
                 this.lastCommand = connection.receive();
-                switch (lastCommand.type){
+                switch (lastCommand.type) {
                     // TODO HANDLE ALL THE POSSIBLE VARIANTS
-                    case ACCEPT:{
+                    case ACCEPT: {
                         this.disconnected = false;
                         break;
                     }
-                    case DISCONNECT:{
+                    case DISCONNECT: {
                         this.connection.close();
                         this.disconnected = true;
                         break;
                     }
-                    case MESSAGE:{
+                    case MESSAGE: {
                         this.lastMessageCommand.message = connection.receiveMessage();
                         System.out.println(lastMessageCommand.message);
                         break;
                     }
-                    case NICK:{
+                    case NICK: {
                         String[] info = this.connection.receiveNickVer();
-                        if (info != null){
+                        if (info != null) {
                             this.lastNickCommand.busy = false;
                             this.lastNickCommand.version = info[0];
                             this.lastNickCommand.nick = info[1];
                             this.disconnected = false;
-                        }
-                        else if (info.length == 5){
+                        } else if (info.length == 5) {
                             this.lastNickCommand.busy = true;
                             this.lastMessageCommand.message = Caller.CallStatus.BUSY.name();
                             this.connection.close();
                             this.disconnected = true;
-                        }
-                        else {
+                        } else {
                             this.connection.reject();
                             this.disconnected = true;
                         }
                         break;
                     }
-                    case REJECT:{
+                    case REJECT: {
                         this.disconnected = true;
                         break;
                     }
-                    default:{
+                    default: {
                         this.connection.reject();
                         this.disconnected = true;
                         break;
@@ -76,24 +74,23 @@ public class CommandListenerThread extends Observable implements Runnable {
                 this.setChanged();
                 this.notifyObservers();
                 this.clearChanged();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 // TODO HANDLE EXCEPTION
                 e.printStackTrace();
                 this.disconnected = true;
-            }
-            catch (NoSuchElementException e2){
+            } catch (NoSuchElementException e2) {
                 // TODO HANDLE EXCEPTION
                 this.disconnected = true;
                 e2.printStackTrace();
             }
         }
     }
+
     public Command.CommandType getLastCommand() {
         return this.lastCommand.type;
     }
 
-    public NickCommand getLastNickCommand(){
+    public NickCommand getLastNickCommand() {
         return this.lastNickCommand;
     }
 
@@ -115,7 +112,7 @@ public class CommandListenerThread extends Observable implements Runnable {
         t.start();
     }
 
-    public void stop() throws InterruptedException{
+    public void stop() throws InterruptedException {
         this.disconnected = true;
     }
 

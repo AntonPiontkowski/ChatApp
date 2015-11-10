@@ -32,7 +32,7 @@ public class Connection {
         close();
     }
 
-    public Command receive(){
+    public Command receive() {
         String command = this.scanner.nextLine();
         return new Command(Command.getType(command));
     }

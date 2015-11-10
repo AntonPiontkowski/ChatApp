@@ -48,13 +48,15 @@ public class CallListenerThread extends Observable implements Runnable {
     public void setLocalNick(String localNick) {
         this.callListener.setLocalNick(localNick);
     }
-    public Connection getLastRequest(){
+
+    public Connection getLastRequest() {
         return this.lastRequest;
     }
+
     @Override
     public void run() {
-        while (true){
-            if (isBusy() != true){
+        while (true) {
+            if (isBusy() != true) {
                 lastRequest = callListener.getConnection();
                 setBusy(true);
                 setChanged();
