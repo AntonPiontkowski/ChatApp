@@ -31,10 +31,8 @@ public class Caller {
             Socket s = new Socket();
             s.connect(this.remoteAddress);
             Connection connection = new Connection(s);
-            // ADD USING OF CALLSTATUS
             return connection;
         } catch (IOException e) {
-            // EDIT LATER
             e.printStackTrace();
             return null;
         }

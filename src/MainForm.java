@@ -1,27 +1,21 @@
-import jdk.nashorn.internal.codegen.CompilerConstants;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.Scanner;
+
 
 
 public class MainForm extends JFrame {
     private Caller caller;
     private volatile Connection connection;
     private volatile CallListener callListener;
-    private volatile CommandListenerThread commandThread;
-    private volatile CallListenerThread callThread;
+    private CommandListenerThread commandThread;
+    private CallListenerThread callThread;
     private int xMouse;
     private int yMouse;
 
@@ -49,6 +43,7 @@ public class MainForm extends JFrame {
         setBounds(200, 100, 700, 400);
         setUndecorated(true);
         setLayout(null);
+        setTitle("ChatApp 2015");
         setIconImage(new ImageIcon("icon.png").getImage());
         close = new JLabel("");
         close.setIcon(new ImageIcon("gui/close.png"));
@@ -393,57 +388,27 @@ public class MainForm extends JFrame {
                         remoteAddressText.setEnabled(true);
                     }
                     // TODO CREATE A CallListenerThread; ADD AN OBSERVER
-                    callListener = new CallListener(localNickText.getText());
-                    callThread = new CallListenerThread(callListener);
-                    callThread.addObserver(new Observer() {
-                        @Override
-                        public void update(Observable o, Object arg) {
-                            /*
-                            Temporary.
-                            Instead of scanner and console will be JDialog
-                             */
-                            connection = callThread.getLastRequest();
-
-//                            if (connection.receiveNickVer() != null){
-//                                remoteNickText.setText(connection.receiveNickVer()[1]);
-//                                connection.sendNickHello(VER, localNickText.getText());
-
-                                System.out.println("1. Accept");
-                                System.out.println("2. Reject");
-                                Scanner scanner = new Scanner(System.in);
-                                int choice = scanner.nextInt();
-                                switch(choice){
-                                    case 1: {
-
-                                        if (connection != null){
-                                            try {
-                                                connection.disconnect();
-                                            }catch (IOException ex){
-                                                //TODO Handle Exception
-                                            }
-                                        }
-
-                                        connection.accept();
-                                        listenCommands();
-                                        commandThread.start();
-                                        connecting();
-                                        break;
-                                    }
-                                    case 2:{
-                                        connection.reject();
-                                        break;
-                                    }
-                                //}
+                    try {
+                        callListener = new CallListener(localNickText.getText());
+                        callThread = new CallListenerThread(callListener);
+                        callThread.addObserver(new Observer() {
+                            @Override
+                            public void update(Observable o, Object arg) {
+                                connection = callThread.getLastRequest();
+                                connecting();
+                                listenCommands();
+                                commandThread.start();
                             }
-                        }
-                    });
-                    Thread t2 = new Thread(callThread);
-                    t2.start();
-                } catch (UnknownHostException e3) {
+                        });
+                        Thread t2 = new Thread(callThread);
+                        t2.start();
+                    } catch (UnknownHostException e5) {
+                        e5.printStackTrace();
+                    }
+                } catch (Exception e3){
                     e3.printStackTrace();
                 }
             }
-
             @Override
             public void mousePressed(MouseEvent e) {
                 apply.setIcon(new ImageIcon("gui/applyBtnPressed.png"));
@@ -558,54 +523,44 @@ public class MainForm extends JFrame {
         commandThread.addObserver(new Observer() {
             @Override
             public void update(Observable o, Object arg) {
-                switch (commandThread.getLastCommand()) {
-                    case ACCEPT: {
-                        messagingArea.append(commandThread.getLastCommand().toString() + "\n");
-                        break;
+                if (commandThread.getLastCommand() instanceof MessageCommand){
+                    Sound.INCOMING.play();
+                    messagingArea.append(remoteNickText.getText() + " : " + commandThread.getMessage() + "\n");
+                } else if (commandThread.getLastCommand() instanceof NickCommand){
+                    if (commandThread.isBusy() == true){
+                    } else{
+                        remoteNickText.setText(commandThread.getNick());
+                        remoteAddressText.setText(callListener.getRemoteAddress().toString());
                     }
-                    case REJECT: {
-                        messagingArea.append(commandThread.getLastCommand().toString() + "\n");
-                        try {
-                            disconnecting();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                } else{
+                    switch (commandThread.getLastCommand().type) {
+                        case ACCEPT: {
+                            messagingArea.append(commandThread.getLastCommand().toString() + "\n");
+                            break;
                         }
-                        break;
-                    }
-                    case MESSAGE: {
-                        Sound.INCOMING.play();
-                        messagingArea.append(remoteNickText.getText() + " : "
-                                + commandThread.getMessage() + "\n");
-                        break;
-                    }
-                    case DISCONNECT: {
-                        messagingArea.append("Disconnected" + "\n");
-                        try {
-                            disconnecting();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    }
-                    case NICK: {
-                        if (commandThread.getLastNickCommand().busy == true) {
-                            remoteNickText.setText(commandThread.getNick());
-                            messagingArea.append(commandThread.getMessage() + "\n");
-                        } else {
-                            messagingArea.append(commandThread.getMessage() + "\n");
+                        case REJECT: {
+                            messagingArea.append(commandThread.getLastCommand().toString() + "\n");
                             try {
                                 disconnecting();
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
+                            break;
                         }
-                        break;
+                        case DISCONNECT: {
+                            messagingArea.append("Disconnected" + "\n");
+                            try {
+                                disconnecting();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                        }
                     }
                 }
-            }
+                }
         });
     }
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override

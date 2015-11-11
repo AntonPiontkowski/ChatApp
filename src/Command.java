@@ -35,18 +35,6 @@ public class Command {
                 return "Disconnect";
             }
         },
-        MESSAGE {
-            @Override
-            public String toString() {
-                return "Message";
-            }
-        },
-        NICK {
-            @Override
-            public String toString() {
-                return "Nick";
-            }
-        },
         REJECT {
             @Override
             public String toString() {

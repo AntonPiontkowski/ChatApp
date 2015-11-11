@@ -5,75 +5,64 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class CommandListenerThread extends Observable implements Runnable {
-    private Connection connection;
-    private boolean disconnected;
+    private volatile Connection connection;
+    private volatile boolean disconnected;
     private volatile Command lastCommand;
-    private MessageCommand lastMessageCommand;
-    private NickCommand lastNickCommand;
     private Thread t;
 
     public CommandListenerThread() {
     }
-
+ 
     public CommandListenerThread(Connection con) {
         this.connection = con;
-        this.lastCommand = new Command();
-        this.lastMessageCommand = new MessageCommand();
-        this.lastNickCommand = new NickCommand();
     }
 
     @Override
     public void run() {
         while (!isDisconnected()) {
             try {
+                /*
+                this.lastCommand can be an instance of Command, MessageCommand or NickCommand
+                 */
                 this.lastCommand = connection.receive();
-                switch (lastCommand.type) {
-                    // TODO HANDLE ALL THE POSSIBLE VARIANTS
-                    case ACCEPT: {
-                        this.disconnected = false;
-                        break;
-                    }
-                    case DISCONNECT: {
-                        this.connection.close();
-                        this.disconnected = true;
-                        break;
-                    }
-                    case MESSAGE: {
-                        this.lastMessageCommand.message = connection.receiveMessage();
-                        System.out.println(lastMessageCommand.message);
-                        break;
-                    }
-                    case NICK: {
-                        String[] info = this.connection.receiveNickVer();
-                        if (info != null) {
-                            this.lastNickCommand.busy = false;
-                            this.lastNickCommand.version = info[0];
-                            this.lastNickCommand.nick = info[1];
-                            this.disconnected = false;
-                        } else if (info.length == 5) {
-                            this.lastNickCommand.busy = true;
-                            this.lastMessageCommand.message = Caller.CallStatus.BUSY.name();
-                            this.connection.close();
-                            this.disconnected = true;
-                        } else {
-                            this.connection.reject();
-                            this.disconnected = true;
+                if (this.lastCommand != null){
+                    if (this.lastCommand instanceof MessageCommand){
+                        ((MessageCommand) this.lastCommand).message = "EMPTY";
+                        ((MessageCommand) this.lastCommand).message = this.connection.receiveMessage();
+                    } else if (this.lastCommand instanceof NickCommand){
+                        String[] remoteInfo = this.connection.receiveNickVer(this.connection.getCommandText());
+                        ((NickCommand)this.lastCommand).nick = remoteInfo[1];
+                        ((NickCommand)this.lastCommand).version = remoteInfo[0];
+                        if (remoteInfo.length == 3)
+                            ((NickCommand)this.lastCommand).busy = true;
+                        else ((NickCommand)this.lastCommand).busy = false;
+                    } else{
+                        switch (lastCommand.type) {
+                            // TODO HANDLE ALL THE POSSIBLE VARIANTS
+                            case ACCEPT: {
+                                this.disconnected = false;
+                                break;
+                            }
+                            case DISCONNECT: {
+                                this.connection.close();
+                                this.disconnected = true;
+                                break;
+                            }
+                            case REJECT: {
+                                this.disconnected = true;
+                                break;
+                            }
+                            default: {
+                                this.connection.reject();
+                                this.disconnected = true;
+                                break;
+                            }
                         }
-                        break;
                     }
-                    case REJECT: {
-                        this.disconnected = true;
-                        break;
-                    }
-                    default: {
-                        this.connection.reject();
-                        this.disconnected = true;
-                        break;
-                    }
+                    this.setChanged();
+                    this.notifyObservers();
+                    this.clearChanged();
                 }
-                this.setChanged();
-                this.notifyObservers();
-                this.clearChanged();
             } catch (IOException e) {
                 // TODO HANDLE EXCEPTION
                 e.printStackTrace();
@@ -86,22 +75,24 @@ public class CommandListenerThread extends Observable implements Runnable {
         }
     }
 
-    public Command.CommandType getLastCommand() {
-        return this.lastCommand.type;
+    public Command getLastCommand() {
+        return this.lastCommand;
     }
 
-    public NickCommand getLastNickCommand() {
-        return this.lastNickCommand;
-    }
 
     public String getMessage() {
-        return this.lastMessageCommand.message;
+        return ((MessageCommand)this.lastCommand).message;
     }
 
     public String getNick() {
-        return this.lastNickCommand.nick;
+        return ((NickCommand)this.lastCommand).nick;
     }
-
+    public String getVer(){
+        return ((NickCommand)this.lastCommand).version;
+    }
+    public boolean isBusy(){
+        return ((NickCommand)this.lastCommand).busy;
+    }
     public boolean isDisconnected() {
         return this.disconnected;
     }

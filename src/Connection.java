@@ -4,12 +4,14 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Connection {
     private PrintWriter printer;
     private Scanner scanner;
     private Socket socket;
+    private String command;
 
     public Connection(Socket s) throws IOException {
         this.socket = s;
@@ -33,23 +35,44 @@ public class Connection {
     }
 
     public Command receive() {
-        String command = this.scanner.nextLine();
-        return new Command(Command.getType(command));
+        try{
+            command = this.scanner.nextLine();
+            if (command.substring(0,7).equals("ChatApp"))
+                return new NickCommand();
+            else if (command.equals("Message")){
+                return new MessageCommand();
+            }
+            else
+                return new Command(Command.getType(command));
+        }
+        catch (NoSuchElementException e){
+            System.out.println("no line");
+            return null;
+        }
     }
 
     public String receiveMessage() {
         return scanner.nextLine();
     }
-
-    public String[] receiveNickVer() {
-        String line = scanner.nextLine();
+    public String getCommandText(){
+        return this.command;
+    }
+    public String[] receiveNickVer(String line) {
         String[] checking = line.split(" ");
 //        Checking if the pal's HelloMessage is right
         if ((checking[0].equals("ChatApp")) & (checking[1].equals("2015")) & (checking[2].equals("user"))) {
-            String[] info = new String[2];
-            info[0] = checking[0] + " " + checking[1];
-            info[1] = checking[4];
-            return info;
+            if (checking.length == 4){
+                String[] info = new String[2];
+                info[0] = checking[0] + " " + checking[1];
+                info[1] = checking[3];
+                return info;
+            } else {
+                String[] info = new String[3];
+                info[0] = checking[0] + " " + checking[1];
+                info[1] = checking[3];
+                info[2] = checking[4];
+                return info;
+            }
         } else {
             this.reject();
             return null;
@@ -61,19 +84,17 @@ public class Connection {
     }
 
     public void sendMessage(String msg) {
-        this.printer.print(Command.CommandType.MESSAGE.toString() + "\n");
+        this.printer.print("Message" + "\n");
         this.printer.print(msg + "\n");
         this.printer.flush();
     }
 
     public void sendNickBusy(String ver, String nick) {
-        this.printer.print(Command.CommandType.NICK.toString() + "\n");
         this.printer.print(ver + " user " + nick + " busy" + "\n");
         this.printer.flush();
     }
 
     public void sendNickHello(String ver, String nick) {
-        this.printer.print(Command.CommandType.NICK.toString() + "\n");
         this.printer.print(ver + " user " + nick + "\n");
         this.printer.flush();
     }

@@ -35,6 +35,7 @@ public class CallListener {
                 connection.close();
                 return null;
             } else {
+                this.remoteAddress = socket.getRemoteSocketAddress();
                 return connection;
             }
         } catch (IOException e) {
