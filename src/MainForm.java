@@ -234,7 +234,8 @@ public class MainForm extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 if (disconnect.isEnabled()) Sound.CLICK.play();
                 try {
-                    connection.disconnect();
+                    if (connection != null)
+                        connection.disconnect();
                 } catch (IOException ex) {
                 }
                 try {
@@ -341,6 +342,7 @@ public class MainForm extends JFrame {
                             connecting();
                             listenCommands();
                             commandThread.start();
+
                         }
                     }
                 }
@@ -393,9 +395,35 @@ public class MainForm extends JFrame {
                         callThread = new CallListenerThread(callListener);
                         callThread.addObserver(new Observer() {
                             @Override
+                            /*
+                            TODO AT THIS RATE INCOMING CONNECTION IS HANDLING IN MAINFORM CLASS
+                            TODO IT SHOULD BE HANDLED IN CallListenerThread CLASS
+                             */
                             public void update(Observable o, Object arg) {
                                 connection = callThread.getLastRequest();
                                 connecting();
+                                connection.sendNickHello(VER, localNickText.getText());
+                                Command greetings = connection.receive();
+                                if (greetings instanceof NickCommand){
+                                    String[] remoteInfo = connection.receiveNickVer(connection.getCommandText());
+                                    remoteNickText.setText(remoteInfo[1]);
+                                    remoteAddressText.setText(callListener.getRemoteAddress().toString());
+                                    connection.accept();
+                                    connecting();
+                                } else {
+                                    connection.reject();
+                                    try{
+                                        connection.close();
+                                        disconnecting();
+                                    }
+                                    catch (IOException e1){
+                                        e1.printStackTrace();
+                                    }
+                                    catch (InterruptedException e2){
+                                        e2.printStackTrace();
+                                    }
+                                }
+
                                 listenCommands();
                                 commandThread.start();
                             }
@@ -523,39 +551,42 @@ public class MainForm extends JFrame {
         commandThread.addObserver(new Observer() {
             @Override
             public void update(Observable o, Object arg) {
-                if (commandThread.getLastCommand() instanceof MessageCommand){
-                    Sound.INCOMING.play();
-                    messagingArea.append(remoteNickText.getText() + " : " + commandThread.getMessage() + "\n");
-                } else if (commandThread.getLastCommand() instanceof NickCommand){
-                    if (commandThread.isBusy() == true){
+                if (commandThread.getLastCommand() != null){
+                    if (commandThread.getLastCommand() instanceof MessageCommand){
+                        Sound.INCOMING.play();
+                        messagingArea.append(remoteNickText.getText() + " : " + commandThread.getMessage() + "\n");
                     } else{
-                        remoteNickText.setText(commandThread.getNick());
-                        remoteAddressText.setText(callListener.getRemoteAddress().toString());
+                        switch (commandThread.getLastCommand().type) {
+                            case ACCEPT: {
+                                messagingArea.append(commandThread.getLastCommand().toString() + "\n");
+                                break;
+                            }
+                            case REJECT: {
+                                messagingArea.append(commandThread.getLastCommand().toString() + "\n");
+                                try {
+                                    disconnecting();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                            }
+                            case DISCONNECT: {
+                                messagingArea.append("Disconnected" + "\n");
+                                try {
+                                    disconnecting();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                            }
+                        }
                     }
-                } else{
-                    switch (commandThread.getLastCommand().type) {
-                        case ACCEPT: {
-                            messagingArea.append(commandThread.getLastCommand().toString() + "\n");
-                            break;
-                        }
-                        case REJECT: {
-                            messagingArea.append(commandThread.getLastCommand().toString() + "\n");
-                            try {
-                                disconnecting();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            break;
-                        }
-                        case DISCONNECT: {
-                            messagingArea.append("Disconnected" + "\n");
-                            try {
-                                disconnecting();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            break;
-                        }
+                } else {
+                    messagingArea.append("Wrong command received. Disconnected");
+                    try {
+                        disconnecting();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
                 }

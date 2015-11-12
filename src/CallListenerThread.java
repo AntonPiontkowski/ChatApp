@@ -55,6 +55,7 @@ public class CallListenerThread extends Observable implements Runnable {
 
     @Override
     public void run() {
+        // TODO ADD AN ABILITY TO HAVE MULTIPLE CONNECTIONS - TO ANSWER "BUSY" IF YOU HAVE ALREADY CONNECTED
         while (true) {
             if (isBusy() != true) {
                 lastRequest = callListener.getConnection();

@@ -25,7 +25,7 @@ public class Command {
         ACCEPT {
             @Override
             public String toString() {
-                return "Accepted";
+                return "Accept";
             }
         },
 

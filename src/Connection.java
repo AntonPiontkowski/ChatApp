@@ -42,11 +42,13 @@ public class Connection {
             else if (command.equals("Message")){
                 return new MessageCommand();
             }
-            else
-                return new Command(Command.getType(command));
+            else {
+                if (Command.getType(command) != null)
+                    return new Command(Command.getType(command));
+                else return null;
+            }
         }
         catch (NoSuchElementException e){
-            System.out.println("no line");
             return null;
         }
     }

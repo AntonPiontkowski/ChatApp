@@ -29,13 +29,6 @@ public class CommandListenerThread extends Observable implements Runnable {
                     if (this.lastCommand instanceof MessageCommand){
                         ((MessageCommand) this.lastCommand).message = "EMPTY";
                         ((MessageCommand) this.lastCommand).message = this.connection.receiveMessage();
-                    } else if (this.lastCommand instanceof NickCommand){
-                        String[] remoteInfo = this.connection.receiveNickVer(this.connection.getCommandText());
-                        ((NickCommand)this.lastCommand).nick = remoteInfo[1];
-                        ((NickCommand)this.lastCommand).version = remoteInfo[0];
-                        if (remoteInfo.length == 3)
-                            ((NickCommand)this.lastCommand).busy = true;
-                        else ((NickCommand)this.lastCommand).busy = false;
                     } else{
                         switch (lastCommand.type) {
                             // TODO HANDLE ALL THE POSSIBLE VARIANTS
@@ -63,6 +56,9 @@ public class CommandListenerThread extends Observable implements Runnable {
                     this.notifyObservers();
                     this.clearChanged();
                 }
+                else {
+                    this.connection.reject();
+                }
             } catch (IOException e) {
                 // TODO HANDLE EXCEPTION
                 e.printStackTrace();
@@ -78,21 +74,10 @@ public class CommandListenerThread extends Observable implements Runnable {
     public Command getLastCommand() {
         return this.lastCommand;
     }
-
-
     public String getMessage() {
         return ((MessageCommand)this.lastCommand).message;
     }
 
-    public String getNick() {
-        return ((NickCommand)this.lastCommand).nick;
-    }
-    public String getVer(){
-        return ((NickCommand)this.lastCommand).version;
-    }
-    public boolean isBusy(){
-        return ((NickCommand)this.lastCommand).busy;
-    }
     public boolean isDisconnected() {
         return this.disconnected;
     }
