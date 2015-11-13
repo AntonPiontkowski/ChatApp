@@ -9,7 +9,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 
-
 public class MainForm extends JFrame {
     private Caller caller;
     private volatile Connection connection;
@@ -370,6 +369,111 @@ public class MainForm extends JFrame {
         });
         add(connect);
 
+        class AskWindow extends JDialog{
+
+            final JLabel yesButton;
+            final JLabel noButton;
+            final JLabel topText;
+            final JLabel buttonText;
+
+            public AskWindow(){
+
+                Toolkit toolkit = Toolkit.getDefaultToolkit();
+                Dimension size = toolkit.getScreenSize();
+                int screenWidth = size.width;
+                int screenHeight = size.height;
+
+                this.setBounds((screenWidth / 2)-(292/2), (screenHeight / 2)-(134/2), 292, 134);
+                this.setUndecorated(true);
+                this.setResizable(false);
+                this.setLayout(null);
+
+                yesButton = new JLabel("");
+                yesButton.setBounds(35, 101, 80, 33);
+                yesButton.setIcon(new ImageIcon("gui/JDialog/dialogueYesBtn.png"));
+                yesButton.addMouseListener(new MouseListener() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        connection.accept();
+                        String[] remoteInfo = connection.receiveNickVer(connection.getCommandText());
+                        remoteNickText.setText(remoteInfo[1]);
+                        remoteAddressText.setText(callListener.getRemoteAddress().toString());
+                        connecting();
+                        listenCommands();
+                        commandThread.start();
+                        getWindow().setVisible(false);
+                    }
+
+                    @Override
+                    public void mousePressed(MouseEvent e) {yesButton.setIcon(new ImageIcon("gui/JDialog/dialogueYesBtnPressed.png"));}
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {yesButton.setIcon(new ImageIcon("gui/JDialog/dialogueYesBtn.png"));}
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {yesButton.setIcon(new ImageIcon("gui/JDialog/dialogueYesBtnEntered.png"));}
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {yesButton.setIcon(new ImageIcon("gui/JDialog/dialogueYesBtn.png"));}
+                });
+                this.add(yesButton);
+
+                noButton = new JLabel("");
+                noButton.setBounds(177, 101, 80, 33);
+                noButton.setIcon(new ImageIcon("gui/JDialog/dialogueNoBtn.png"));
+                noButton.addMouseListener(new MouseListener() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        connection.reject();
+                        try{
+                            connection.close();
+                            disconnecting();
+                        }
+                        catch (IOException e1){
+                            e1.printStackTrace();
+                        }
+                        catch (InterruptedException e2){
+                            e2.printStackTrace();
+                        }
+                        getWindow().setVisible(false);
+                    }
+
+                    @Override
+                    public void mousePressed(MouseEvent e) {noButton.setIcon(new ImageIcon("gui/JDialog/dialogueNoBtnPressed.png"));}
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {noButton.setIcon(new ImageIcon("gui/JDialog/dialogueNoBtn.png"));}
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {noButton.setIcon(new ImageIcon("gui/JDialog/dialogueNoBtnEntered.png"));}
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {noButton.setIcon(new ImageIcon("gui/JDialog/dialogueNoBtn.png"));}
+                });
+                this.add(noButton);
+
+                topText = new JLabel("Another user wants to speak to you.");
+                topText.setBounds(45, 40, 220, 15);
+                topText.setForeground(Color.WHITE);
+                this.add(topText);
+
+                buttonText = new JLabel("Accept him?");
+                buttonText.setBounds(108, 60, 80, 15);
+                buttonText.setForeground(Color.WHITE);
+                this.add(buttonText);
+
+                JLabel windowBackground = new JLabel("");
+                windowBackground.setBounds(-3, 0, 310, 140);
+                windowBackground.setIcon(new ImageIcon("gui/JDialog/dialogueForm.png"));
+                this.add(windowBackground);
+
+                this.setVisible(true);
+            }
+            public AskWindow getWindow(){
+                return this;
+            }
+        }
+
         apply = new JLabel("");
         apply.setBounds(624, 83, 57, 24);
         apply.setIcon(new ImageIcon("gui/applyBtn.png"));
@@ -401,15 +505,10 @@ public class MainForm extends JFrame {
                              */
                             public void update(Observable o, Object arg) {
                                 connection = callThread.getLastRequest();
-                                connecting();
                                 connection.sendNickHello(VER, localNickText.getText());
                                 Command greetings = connection.receive();
                                 if (greetings instanceof NickCommand){
-                                    String[] remoteInfo = connection.receiveNickVer(connection.getCommandText());
-                                    remoteNickText.setText(remoteInfo[1]);
-                                    remoteAddressText.setText(callListener.getRemoteAddress().toString());
-                                    connection.accept();
-                                    connecting();
+                                    AskWindow askWindow = new AskWindow();
                                 } else {
                                     connection.reject();
                                     try{
@@ -423,9 +522,6 @@ public class MainForm extends JFrame {
                                         e2.printStackTrace();
                                     }
                                 }
-
-                                listenCommands();
-                                commandThread.start();
                             }
                         });
                         Thread t2 = new Thread(callThread);
