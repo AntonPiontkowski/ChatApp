@@ -35,20 +35,18 @@ public class Connection {
     }
 
     public Command receive() {
-        try{
+        try {
             command = this.scanner.nextLine();
-            if (command.substring(0,7).equals("ChatApp"))
+            if (command.substring(0, 7).equals("ChatApp"))
                 return new NickCommand();
-            else if (command.equals("Message")){
+            else if (command.equals("Message")) {
                 return new MessageCommand();
-            }
-            else {
+            } else {
                 if (Command.getType(command) != null)
                     return new Command(Command.getType(command));
                 else return null;
             }
-        }
-        catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             return null;
         }
     }
@@ -56,14 +54,16 @@ public class Connection {
     public String receiveMessage() {
         return scanner.nextLine();
     }
-    public String getCommandText(){
+
+    public String getCommandText() {
         return this.command;
     }
+
     public String[] receiveNickVer(String line) {
         String[] checking = line.split(" ");
 //        Checking if the pal's HelloMessage is right
         if ((checking[0].equals("ChatApp")) & (checking[1].equals("2015")) & (checking[2].equals("user"))) {
-            if (checking.length == 4){
+            if (checking.length == 4) {
                 String[] info = new String[2];
                 info[0] = checking[0] + " " + checking[1];
                 info[1] = checking[3];

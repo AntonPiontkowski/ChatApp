@@ -8,7 +8,6 @@ import java.net.UnknownHostException;
 import java.util.Observable;
 import java.util.Observer;
 
-
 public class MainForm extends JFrame {
     private Caller caller;
     private volatile Connection connection;
@@ -36,7 +35,7 @@ public class MainForm extends JFrame {
     final JTextArea newMsg;
     final JTextArea messagingArea;
 
-    SwingWorker worker;
+//    SwingWorker worker;
 
     public MainForm() {
         setBounds(200, 100, 700, 400);
@@ -341,9 +340,73 @@ public class MainForm extends JFrame {
                             connecting();
                             listenCommands();
                             commandThread.start();
-
                         }
                     }
+                } else {
+                    class Attention extends JFrame {
+
+                        private final JLabel ok;
+                        private final JLabel text;
+
+                        public Attention() {
+                            Toolkit toolkit = Toolkit.getDefaultToolkit();
+                            Dimension size = toolkit.getScreenSize();
+
+                            this.setBounds((size.width / 2) - (292 / 2), (size.height / 2) - (134 / 2), 250, 134);
+                            this.setUndecorated(true);
+                            this.setResizable(false);
+                            this.setLayout(null);
+
+
+                            text = new JLabel("Line input ip -address is empty");
+                            text.setBounds(45, 50, 220, 15);
+                            text.setForeground(Color.WHITE);
+                            this.add(text);
+
+                            ok = new JLabel("");
+                            ok.setBounds(160, 101, 81, 24);
+                            ok.setIcon(new ImageIcon("gui/AttentionWindow/okBtn.png"));
+                            ok.addMouseListener(new MouseListener() {
+                                @Override
+                                public void mouseClicked(MouseEvent e) {
+                                    setVisible(false);
+                                }
+
+                                @Override
+                                public void mousePressed(MouseEvent e) {
+                                    ok.setIcon(new ImageIcon("gui/AttentionWindow/okBtnEntered.png"));
+                                }
+
+                                @Override
+                                public void mouseReleased(MouseEvent e) {
+                                    ok.setIcon(new ImageIcon("gui/AttentionWindow/okBtn.png"));
+                                }
+
+                                @Override
+                                public void mouseEntered(MouseEvent e) {
+                                    ok.setIcon(new ImageIcon("gui/AttentionWindow/okBtnEntered.png"));
+                                }
+
+                                @Override
+                                public void mouseExited(MouseEvent e) {
+                                    ok.setIcon(new ImageIcon("gui/AttentionWindow/okBtn.png"));
+                                }
+                            });
+                            this.add(ok);
+
+                            JLabel windowBackground = new JLabel("");
+                            windowBackground.setBounds(-3, 0, 310, 140);
+                            windowBackground.setIcon(new ImageIcon("gui/AttentionWindow/background.png"));
+                            this.add(windowBackground);
+                            this.setVisible(true);
+                        }
+
+                        public Attention showAttention() {
+                            return this;
+                        }
+                    }
+                    Attention attention = new Attention();
+                    attention.showAttention();
                 }
             }
 
@@ -369,21 +432,20 @@ public class MainForm extends JFrame {
         });
         add(connect);
 
-        class AskWindow extends JDialog{
+        class AskWindow extends JDialog {
 
             final JLabel yesButton;
             final JLabel noButton;
             final JLabel topText;
             final JLabel buttonText;
 
-            public AskWindow(){
-
+            public AskWindow() {
                 Toolkit toolkit = Toolkit.getDefaultToolkit();
                 Dimension size = toolkit.getScreenSize();
                 int screenWidth = size.width;
                 int screenHeight = size.height;
 
-                this.setBounds((screenWidth / 2)-(292/2), (screenHeight / 2)-(134/2), 292, 134);
+                this.setBounds((screenWidth / 2) - (292 / 2), (screenHeight / 2) - (134 / 2), 292, 134);
                 this.setUndecorated(true);
                 this.setResizable(false);
                 this.setLayout(null);
@@ -405,16 +467,24 @@ public class MainForm extends JFrame {
                     }
 
                     @Override
-                    public void mousePressed(MouseEvent e) {yesButton.setIcon(new ImageIcon("gui/JDialog/dialogueYesBtnPressed.png"));}
+                    public void mousePressed(MouseEvent e) {
+                        yesButton.setIcon(new ImageIcon("gui/JDialog/dialogueYesBtnPressed.png"));
+                    }
 
                     @Override
-                    public void mouseReleased(MouseEvent e) {yesButton.setIcon(new ImageIcon("gui/JDialog/dialogueYesBtn.png"));}
+                    public void mouseReleased(MouseEvent e) {
+                        yesButton.setIcon(new ImageIcon("gui/JDialog/dialogueYesBtn.png"));
+                    }
 
                     @Override
-                    public void mouseEntered(MouseEvent e) {yesButton.setIcon(new ImageIcon("gui/JDialog/dialogueYesBtnEntered.png"));}
+                    public void mouseEntered(MouseEvent e) {
+                        yesButton.setIcon(new ImageIcon("gui/JDialog/dialogueYesBtnEntered.png"));
+                    }
 
                     @Override
-                    public void mouseExited(MouseEvent e) {yesButton.setIcon(new ImageIcon("gui/JDialog/dialogueYesBtn.png"));}
+                    public void mouseExited(MouseEvent e) {
+                        yesButton.setIcon(new ImageIcon("gui/JDialog/dialogueYesBtn.png"));
+                    }
                 });
                 this.add(yesButton);
 
@@ -425,30 +495,36 @@ public class MainForm extends JFrame {
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         connection.reject();
-                        try{
+                        try {
                             connection.close();
                             disconnecting();
-                        }
-                        catch (IOException e1){
+                        } catch (IOException e1) {
                             e1.printStackTrace();
-                        }
-                        catch (InterruptedException e2){
+                        } catch (InterruptedException e2) {
                             e2.printStackTrace();
                         }
                         getWindow().setVisible(false);
                     }
 
                     @Override
-                    public void mousePressed(MouseEvent e) {noButton.setIcon(new ImageIcon("gui/JDialog/dialogueNoBtnPressed.png"));}
+                    public void mousePressed(MouseEvent e) {
+                        noButton.setIcon(new ImageIcon("gui/JDialog/dialogueNoBtnPressed.png"));
+                    }
 
                     @Override
-                    public void mouseReleased(MouseEvent e) {noButton.setIcon(new ImageIcon("gui/JDialog/dialogueNoBtn.png"));}
+                    public void mouseReleased(MouseEvent e) {
+                        noButton.setIcon(new ImageIcon("gui/JDialog/dialogueNoBtn.png"));
+                    }
 
                     @Override
-                    public void mouseEntered(MouseEvent e) {noButton.setIcon(new ImageIcon("gui/JDialog/dialogueNoBtnEntered.png"));}
+                    public void mouseEntered(MouseEvent e) {
+                        noButton.setIcon(new ImageIcon("gui/JDialog/dialogueNoBtnEntered.png"));
+                    }
 
                     @Override
-                    public void mouseExited(MouseEvent e) {noButton.setIcon(new ImageIcon("gui/JDialog/dialogueNoBtn.png"));}
+                    public void mouseExited(MouseEvent e) {
+                        noButton.setIcon(new ImageIcon("gui/JDialog/dialogueNoBtn.png"));
+                    }
                 });
                 this.add(noButton);
 
@@ -469,7 +545,8 @@ public class MainForm extends JFrame {
 
                 this.setVisible(true);
             }
-            public AskWindow getWindow(){
+
+            public AskWindow getWindow() {
                 return this;
             }
         }
@@ -507,18 +584,16 @@ public class MainForm extends JFrame {
                                 connection = callThread.getLastRequest();
                                 connection.sendNickHello(VER, localNickText.getText());
                                 Command greetings = connection.receive();
-                                if (greetings instanceof NickCommand){
+                                if (greetings instanceof NickCommand) {
                                     AskWindow askWindow = new AskWindow();
                                 } else {
                                     connection.reject();
-                                    try{
+                                    try {
                                         connection.close();
                                         disconnecting();
-                                    }
-                                    catch (IOException e1){
+                                    } catch (IOException e1) {
                                         e1.printStackTrace();
-                                    }
-                                    catch (InterruptedException e2){
+                                    } catch (InterruptedException e2) {
                                         e2.printStackTrace();
                                     }
                                 }
@@ -529,10 +604,11 @@ public class MainForm extends JFrame {
                     } catch (UnknownHostException e5) {
                         e5.printStackTrace();
                     }
-                } catch (Exception e3){
+                } catch (Exception e3) {
                     e3.printStackTrace();
                 }
             }
+
             @Override
             public void mousePressed(MouseEvent e) {
                 apply.setIcon(new ImageIcon("gui/applyBtnPressed.png"));
@@ -647,11 +723,11 @@ public class MainForm extends JFrame {
         commandThread.addObserver(new Observer() {
             @Override
             public void update(Observable o, Object arg) {
-                if (commandThread.getLastCommand() != null){
-                    if (commandThread.getLastCommand() instanceof MessageCommand){
+                if (commandThread.getLastCommand() != null) {
+                    if (commandThread.getLastCommand() instanceof MessageCommand) {
                         Sound.INCOMING.play();
                         messagingArea.append(remoteNickText.getText() + " : " + commandThread.getMessage() + "\n");
-                    } else{
+                    } else {
                         switch (commandThread.getLastCommand().type) {
                             case ACCEPT: {
                                 messagingArea.append(commandThread.getLastCommand().toString() + "\n");
@@ -685,9 +761,10 @@ public class MainForm extends JFrame {
                         e.printStackTrace();
                     }
                 }
-                }
+            }
         });
     }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override

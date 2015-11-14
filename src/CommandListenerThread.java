@@ -12,7 +12,7 @@ public class CommandListenerThread extends Observable implements Runnable {
 
     public CommandListenerThread() {
     }
- 
+
     public CommandListenerThread(Connection con) {
         this.connection = con;
     }
@@ -21,15 +21,15 @@ public class CommandListenerThread extends Observable implements Runnable {
     public void run() {
         while (!isDisconnected()) {
             try {
-                /*
-                this.lastCommand can be an instance of Command, MessageCommand or NickCommand
-                 */
+
+                //this.lastCommand can be an instance of Command, MessageCommand or NickCommand
+
                 this.lastCommand = connection.receive();
-                if (this.lastCommand != null){
-                    if (this.lastCommand instanceof MessageCommand){
+                if (this.lastCommand != null) {
+                    if (this.lastCommand instanceof MessageCommand) {
                         ((MessageCommand) this.lastCommand).message = "EMPTY";
                         ((MessageCommand) this.lastCommand).message = this.connection.receiveMessage();
-                    } else{
+                    } else {
                         switch (lastCommand.type) {
                             // TODO HANDLE ALL THE POSSIBLE VARIANTS
                             case ACCEPT: {
@@ -55,8 +55,7 @@ public class CommandListenerThread extends Observable implements Runnable {
                     this.setChanged();
                     this.notifyObservers();
                     this.clearChanged();
-                }
-                else {
+                } else {
                     this.connection.reject();
                 }
             } catch (IOException e) {
@@ -74,8 +73,9 @@ public class CommandListenerThread extends Observable implements Runnable {
     public Command getLastCommand() {
         return this.lastCommand;
     }
+
     public String getMessage() {
-        return ((MessageCommand)this.lastCommand).message;
+        return ((MessageCommand) this.lastCommand).message;
     }
 
     public boolean isDisconnected() {

@@ -63,6 +63,8 @@ public class CallListenerThread extends Observable implements Runnable {
                 setChanged();
                 notifyObservers();
                 clearChanged();
+            } else {
+
             }
         }
     }

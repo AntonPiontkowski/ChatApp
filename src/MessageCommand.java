@@ -5,8 +5,11 @@ public class MessageCommand extends Command {
     public MessageCommand(String message) {
         this.message = message;
     }
-    public MessageCommand(){}
-    public String toString(){
+
+    public MessageCommand() {
+    }
+
+    public String toString() {
         return "Message";
     }
 }
