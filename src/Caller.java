@@ -16,57 +16,58 @@ public class Caller {
     private String remoteNick;
     private SocketAddress remoteAddress;
 
-    public Caller(String localNick){
+    public Caller(String localNick) {
         this.localNick = localNick;
     }
-    public Connection call(){
-        try{
+
+    public Connection call() {
+        try {
             Socket socket = new Socket();
             socket.connect(this.remoteAddress, 30);
             Connection connection = new Connection(socket);
             String firstMsg = connection.receive();
-            if (firstMsg.equals(Command.CommandType.REJECT.toString())){
+            if (firstMsg.equals(Command.CommandType.REJECT.toString())) {
                 connection.close();
                 this.status = CallStatus.REJECTED;
                 return null;
-            }
-            else {
+            } else {
                 String[] info = Checker.getInfo(firstMsg);
-                if (info != null){
-                    if (info.length == 3){
+                if (info != null) {
+                    if (info.length == 3) {
                         this.status = CallStatus.BUSY;
                         connection.close();
                         return null;
-                    }
-                    else {
+                    } else {
                         this.remoteNick = info[1];
                         this.status = CallStatus.OK;
                         connection.sendNick(Constants.DEFAULT_VER, this.localNick, false);
                         return connection;
                     }
-                }
-                else {
+                } else {
                     connection.send(Command.CommandType.DISCONNECT.toString());
                     connection.close();
                     return null;
                 }
             }
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             this.status = CallStatus.NOT_ACCESIBLE;
             return null;
         }
     }
-    public void setRemoteAddress(SocketAddress remoteAddress){
+
+    public void setRemoteAddress(SocketAddress remoteAddress) {
         this.remoteAddress = remoteAddress;
     }
-    public String getRemoteNick(){
+
+    public String getRemoteNick() {
         return this.remoteNick;
     }
-    public CallStatus getStatus(){
+
+    public CallStatus getStatus() {
         return this.status;
     }
-    public enum CallStatus{
+
+    public enum CallStatus {
         NOT_ACCESIBLE, BUSY, OK, REJECTED, NO_SERVICE;
     }
 }
