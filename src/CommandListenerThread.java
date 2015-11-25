@@ -8,52 +8,49 @@ CLASS TO RECEIVE COMMANDS THAT HELPS TO UNDERSTAND WHICH STEP TO MAKE NEXT
 
  */
 
-public class CommandListenerThread extends Observable implements Runnable {
+public class CommandListenerThread extends Observable implements  Runnable{
     private boolean disconnected;
     private Connection connection;
     private Command lastCommand;
 
-    public CommandListenerThread(Connection connection) {
+    public CommandListenerThread(Connection connection){
         this.connection = connection;
         this.lastCommand = new Command();
     }
 
 
-    public void setDisconnected(boolean disconnected) {
+    public void setDisconnected(boolean disconnected){
         this.disconnected = disconnected;
     }
-
-    public Command getLastCommand() {
+    public Command getLastCommand(){
         return this.lastCommand;
     }
-
-    public void start() {
+    public void start(){
         this.disconnected = false;
         Thread commandThread = new Thread(this);
         commandThread.start();
     }
-
     public void stop() {
         this.disconnected = true;
     }
-
     @Override
     public void run() {
         while (disconnected == false) {
             String command = connection.receive();
-            if (command != null) {
+            if (command != null){
                 this.lastCommand = new Command(Checker.getType(command));
-                if (this.lastCommand.getType() != null) {
-                    switch (this.lastCommand.getType()) {
+                if (this.lastCommand.getType() != null){
+                    switch (this.lastCommand.getType()){
                         case ACCEPT: {
                             this.disconnected = false;
                             break;
                         }
                         case DISCONNECT: {
-                            try {
+                            try{
                                 this.disconnected = true;
                                 this.connection.close();
-                            } catch (IOException e) {
+                            }
+                            catch (IOException e){
                                 e.printStackTrace();
                             }
                             this.disconnected = true;
@@ -72,28 +69,34 @@ public class CommandListenerThread extends Observable implements Runnable {
                     setChanged();
                     notifyObservers();
                     clearChanged();
-                } else if (command.equals("Message")) {
+                }
+                else if(command.equals("Message")){
                     this.lastCommand = new MessageCommand();
-                    ((MessageCommand) this.lastCommand).setMessage(connection.receive());
+                    ((MessageCommand)this.lastCommand).setMessage(connection.receive());
                     setChanged();
                     notifyObservers();
                     clearChanged();
-                } else if (command.substring(0, 7).equals("ChatApp")) {
+                }
+                else if(command.substring(0, 7).equals("ChatApp")){
                     String[] info = Checker.getInfo(command);
-                    if (info != null) {
-                        if (info.length == 2) {
-                            this.lastCommand = new NickCommand(false, info[0], info[1]);
+                    if (info != null){
+                        if (info.length == 2){
+                            this.lastCommand = new NickCommand(false,info[0],info[1]);
                             setChanged();
                             notifyObservers();
                             clearChanged();
-                        } else {
-                            this.lastCommand = new NickCommand(true, info[0], info[1]);
                         }
-                    } else {
+                        else {
+                            this.lastCommand = new NickCommand(true,info[0],info[1]);
+                        }
+                    }
+                    else {
                         connection.send(Command.CommandType.REJECT.toString());
                     }
-                } else connection.send(Command.CommandType.REJECT.toString());
-            } else {
+                }
+                else connection.send(Command.CommandType.REJECT.toString());
+            }
+            else {
                 this.lastCommand = null;
                 setChanged();
                 notifyObservers();

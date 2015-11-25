@@ -10,37 +10,34 @@ public class Command {
 
     private CommandType type;
 
-    public Command(CommandType type) {
+    public Command(CommandType type){
         this.type = type;
     }
+    public Command(){}
 
-    public Command() {
-    }
-
-    public CommandType getType() {
+    public CommandType getType(){
         return this.type;
     }
-
-    public void setType(CommandType type) {
+    public void setType(CommandType type){
         this.type = type;
     }
 
-    public enum CommandType {
-        ACCEPT {
+    public enum CommandType{
+        ACCEPT{
             @Override
-            public String toString() {
+            public String toString(){
                 return "Accepted";
             }
         },
-        DISCONNECT {
+        DISCONNECT{
             @Override
-            public String toString() {
+            public String toString(){
                 return "Disconnect";
             }
         },
-        REJECT {
+        REJECT{
             @Override
-            public String toString() {
+            public String toString(){
                 return "Rejected";
             }
         }

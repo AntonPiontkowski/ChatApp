@@ -22,7 +22,7 @@ public class Application {
     private CommandListenerThread commandListenerThread;
     private GUI frame;
 
-    public Application(GUI frame) {
+    public Application(GUI frame){
         this.frame = frame;
         this.frame.addWindowStateListener(new StateListener());
         this.frame.addSendListener(new SendListener());
@@ -35,7 +35,9 @@ public class Application {
         this.frame.addComponentListener(new ResizeListener());
     }
 
-    public void acceptIncomingCall() {
+
+
+    public void acceptIncomingCall(){
         this.frame.setRemoteAddress(connection.getSocketAddress().toString());
         this.frame.setRemoteNick(((NickCommand) commandListenerThread.getLastCommand()).getNick());
         this.connection.send(Command.CommandType.ACCEPT.toString());
@@ -45,8 +47,7 @@ public class Application {
         addCommandObserver();
         commandListenerThread.start();
     }
-
-    public void rejectIncomingCall() throws IOException {
+    public void rejectIncomingCall() throws IOException{
         this.connection = callListenerThread.getLastCon();
         this.connection.send(Command.CommandType.REJECT.toString());
         this.commandListenerThread.stop();
@@ -54,17 +55,19 @@ public class Application {
         this.connection.close();
     }
 
-    public void addCommandObserver() {
+    public void addCommandObserver(){
         this.commandListenerThread.addObserver(new Observer() {
             @Override
             public void update(Observable o, Object arg) {
-                if (commandListenerThread.getLastCommand() != null) {
-                    if (commandListenerThread.getLastCommand() instanceof NickCommand) {
+                if (commandListenerThread.getLastCommand() != null){
+                    if (commandListenerThread.getLastCommand() instanceof NickCommand){
+                        Sounds.INCOMING.play();
                         frame.incomingCall(((NickCommand) commandListenerThread.getLastCommand()).getNick());
                         frame.addAcceptListener(new AcceptListener());
                         frame.addRejectListener(new RejectListener());
                         commandListenerThread.stop();
-                    } else if (commandListenerThread.getLastCommand() instanceof MessageCommand) {
+                    }
+                    else if (commandListenerThread.getLastCommand() instanceof MessageCommand){
                         Sounds.RECEIVE.play();
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
@@ -72,13 +75,14 @@ public class Application {
                                 frame.appendMsg(((MessageCommand) commandListenerThread.getLastCommand()).getMessage());
                             }
                         });
-                    } else if (Checker.getType(commandListenerThread.getLastCommand().getType().toString()) != null) {
-                        switch (commandListenerThread.getLastCommand().getType()) {
-                            case ACCEPT: {
+                    }
+                    else if (Checker.getType(commandListenerThread.getLastCommand().getType().toString()) != null){
+                        switch (commandListenerThread.getLastCommand().getType()){
+                            case ACCEPT:{
                                 callListenerThread.setBusy(true);
                                 break;
                             }
-                            case REJECT: {
+                            case REJECT:{
                                 callListenerThread.setBusy(false);
                                 SwingUtilities.invokeLater(new Runnable() {
                                     @Override
@@ -89,7 +93,7 @@ public class Application {
                                 });
                                 break;
                             }
-                            case DISCONNECT: {
+                            case DISCONNECT:{
                                 SwingUtilities.invokeLater(new Runnable() {
                                     @Override
                                     public void run() {
@@ -104,7 +108,8 @@ public class Application {
                             }
                         }
                     }
-                } else {
+                }
+                else {
                     commandListenerThread.stop();
                     connection = null;
                     commandListenerThread = null;
@@ -122,7 +127,7 @@ public class Application {
     }
 
     // Listeners
-    private class StateListener implements WindowStateListener {
+    private class StateListener implements WindowStateListener{
         @Override
         public void windowStateChanged(WindowEvent e) {
             SwingUtilities.invokeLater(new Runnable() {
@@ -133,7 +138,6 @@ public class Application {
             });
         }
     }
-
     private class ResizeListener extends ComponentAdapter {
 
         @Override
@@ -147,8 +151,7 @@ public class Application {
 
         }
     }
-
-    private class SendListener implements MouseListener {
+    private class SendListener implements MouseListener{
 
         @Override
         public void mouseClicked(MouseEvent e) {
@@ -157,13 +160,15 @@ public class Application {
                     @Override
                     public void run() {
                         String msg = frame.getMsg();
-                        if (msg.length() > 0) {
+                        if (msg.length() > 0){
                             frame.appendMyMsg(msg);
                             Sounds.SEND.play();
                             connection.sendMsg(msg);
                         }
                     }
                 });
+            else
+                Sounds.DISABLED.play();
         }
 
         @Override
@@ -172,7 +177,7 @@ public class Application {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setSendIcon(new ImageIcon("gui/frame/sendPrs.png"));
+                        frame.setSendIcon(new ImageIcon(getClass().getResource("gui/frame/sendPrs.png")));
                     }
                 });
         }
@@ -183,7 +188,7 @@ public class Application {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setSendIcon(new ImageIcon("gui/frame/sendEnt.png"));
+                        frame.setSendIcon(new ImageIcon(getClass().getResource("gui/frame/sendEnt.png")));
                     }
                 });
         }
@@ -194,7 +199,7 @@ public class Application {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setSendIcon(new ImageIcon("gui/frame/sendEnt.png"));
+                        frame.setSendIcon(new ImageIcon(getClass().getResource("gui/frame/sendEnt.png")));
                     }
                 });
         }
@@ -205,24 +210,24 @@ public class Application {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setSendIcon(new ImageIcon("gui/frame/sendIcon.png"));
+                        frame.setSendIcon(new ImageIcon(getClass().getResource("gui/frame/sendIcon.png")));
                     }
                 });
         }
     }
-
-    private class BtnConListener implements MouseListener {
+    private class BtnConListener implements MouseListener{
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (frame.conIsEnabled()) {
-                // TODO CONNECTING
-                if (frame.getRemoteAddress().length() > 3) {
-                    caller.setRemoteAddress(new InetSocketAddress(frame.getRemoteAddress(), Constants.PORT));
+            if (frame.conIsEnabled()){
+            // TODO CONNECTING
+                if (frame.getRemoteAddress().length() > 3){
+                    caller.setRemoteAddress(new InetSocketAddress(frame.getRemoteAddress(),Constants.PORT));
                     connection = caller.call();
-                    if (connection == null) {
+                    if (connection == null){
                         // TODO WRITE CALLSTATUS TO THE TEXT FIELD OR SHOW A MESSAGE WITH CALL STATUS
-                    } else {
+                    }
+                    else{
                         commandListenerThread = new CommandListenerThread(connection);
                         addCommandObserver();
                         frame.setRemoteNick(caller.getRemoteNick());
@@ -235,10 +240,13 @@ public class Application {
                         commandListenerThread.start();
                         addCommandObserver();
                     }
-                } else {
+                }
+                else {
                     // TODO SHOW A MESSAGE TO FILL THE REMOTE ADDRESS FIELD
                 }
             }
+            else
+                Sounds.DISABLED.play();
         }
 
         @Override
@@ -247,7 +255,7 @@ public class Application {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setConnectIcon(new ImageIcon("gui/frame/conPrs.png"));
+                        frame.setConnectIcon(new ImageIcon(getClass().getResource("gui/frame/conPrs.png")));
                     }
                 });
         }
@@ -258,7 +266,7 @@ public class Application {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setConnectIcon(new ImageIcon("gui/frame/conEnt.png"));
+                        frame.setConnectIcon(new ImageIcon(getClass().getResource("gui/frame/conEnt.png")));
                     }
                 });
         }
@@ -269,7 +277,7 @@ public class Application {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setConnectIcon(new ImageIcon("gui/frame/conEnt.png"));
+                        frame.setConnectIcon(new ImageIcon(getClass().getResource("gui/frame/conEnt.png")));
                     }
                 });
         }
@@ -280,20 +288,19 @@ public class Application {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setConnectIcon(new ImageIcon("gui/frame/conIcon.png"));
+                        frame.setConnectIcon(new ImageIcon(getClass().getResource("gui/frame/conIcon.png")));
                     }
                 });
         }
     }
-
-    private class BtnApplyListener implements MouseListener {
+    private class BtnApplyListener implements MouseListener{
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (frame.applyIsEnabled()) {
+            if (frame.applyIsEnabled()){
                 // TODO CREATING Caller, STARTING CallListenerThread
-                if (frame.getLocalNick().length() > 3 | frame.getLocalNick().length() == 0) {
-                    try {
+                if (frame.getLocalNick().length() > 3 | frame.getLocalNick().length() == 0){
+                    try{
                         if (frame.getLocalNick().length() == 0)
                             frame.setLocalNick(Constants.DEFAULT_NAME);
                         caller = new Caller(frame.getLocalNick());
@@ -304,7 +311,6 @@ public class Application {
                                 SwingUtilities.invokeLater(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Sounds.INCOMING.play();
                                         connection = callListenerThread.getLastCon();
                                         commandListenerThread = new CommandListenerThread(connection);
                                         addCommandObserver();
@@ -323,26 +329,33 @@ public class Application {
                             }
                         });
 
-                    } catch (UnknownHostException e2) {
+                    }
+
+                    catch (UnknownHostException e2){
                         e2.printStackTrace();
-                    } catch (IOException e3) {
+                    }
+                    catch (IOException e3){
                         e3.printStackTrace();
                     }
-                } else {
+               }
+                else {
                     // TODO SHOW MESSSAGE THAT LENGTH SHOULD BE MORE THAN 3 CHARS
                 }
+            }
+            else {
+                Sounds.DISABLED.play();
             }
         }
 
         @Override
         public void mousePressed(MouseEvent e) {
             if (frame.applyIsEnabled())
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        frame.setApplyIcon(new ImageIcon("gui/frame/applyPrs.png"));
-                    }
-                });
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    frame.setApplyIcon(new ImageIcon(getClass().getResource("gui/frame/applyPrs.png")));
+                }
+            });
         }
 
         @Override
@@ -351,7 +364,7 @@ public class Application {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setApplyIcon(new ImageIcon("gui/frame/applyEnt.png"));
+                        frame.setApplyIcon(new ImageIcon(getClass().getResource("gui/frame/applyEnt.png")));
                     }
                 });
         }
@@ -362,7 +375,7 @@ public class Application {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setApplyIcon(new ImageIcon("gui/frame/applyEnt.png"));
+                        frame.setApplyIcon(new ImageIcon(getClass().getResource("gui/frame/applyEnt.png")));
                     }
                 });
         }
@@ -373,17 +386,16 @@ public class Application {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setApplyIcon(new ImageIcon("gui/frame/applyIcon.png"));
+                        frame.setApplyIcon(new ImageIcon(getClass().getResource("gui/frame/applyIcon.png")));
                     }
                 });
         }
     }
-
-    private class BtnDisconListener implements MouseListener {
+    private class BtnDisconListener implements MouseListener{
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (frame.disconIsEnabled()) {
+            if (frame.disconIsEnabled()){
                 // TODO DISCONNECTING
                 commandListenerThread.stop();
                 connection.send(Command.CommandType.DISCONNECT.toString());
@@ -394,6 +406,8 @@ public class Application {
                     }
                 });
             }
+            else
+                Sounds.DISABLED.play();
         }
 
         @Override
@@ -402,7 +416,7 @@ public class Application {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setDisconnectIcon(new ImageIcon("gui/frame/disconPrs.png"));
+                        frame.setDisconnectIcon(new ImageIcon(getClass().getResource("gui/frame/disconPrs.png")));
                     }
                 });
         }
@@ -413,7 +427,7 @@ public class Application {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setDisconnectIcon(new ImageIcon("gui/frame/disconEnt.png"));
+                        frame.setDisconnectIcon(new ImageIcon(getClass().getResource("gui/frame/disconEnt.png")));
                     }
                 });
         }
@@ -424,7 +438,7 @@ public class Application {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setDisconnectIcon(new ImageIcon("gui/frame/disconEnt.png"));
+                        frame.setDisconnectIcon(new ImageIcon(getClass().getResource("gui/frame/disconEnt.png")));
                     }
                 });
         }
@@ -435,17 +449,16 @@ public class Application {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setDisconnectIcon(new ImageIcon("gui/frame/disconIcon.png"));
+                        frame.setDisconnectIcon(new ImageIcon(getClass().getResource("gui/frame/disconIcon.png")));
                     }
                 });
         }
     }
-
-    private class AcceptListener implements MouseListener {
+    private class AcceptListener implements MouseListener{
         @Override
         public void mouseClicked(MouseEvent e) {
             acceptIncomingCall();
-            if (frame.incomingVisible()) {
+            if (frame.incomingVisible()){
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -458,11 +471,11 @@ public class Application {
 
         @Override
         public void mousePressed(MouseEvent e) {
-            if (frame.incomingVisible()) {
+            if (frame.incomingVisible()){
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setAcceptIcon(new ImageIcon("gui/dialog/acPrs.png"));
+                        frame.setAcceptIcon(new ImageIcon(getClass().getResource("gui/dialog/acPrs.png")));
                     }
                 });
             }
@@ -470,11 +483,11 @@ public class Application {
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            if (frame.incomingVisible()) {
+            if (frame.incomingVisible()){
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setAcceptIcon(new ImageIcon("gui/dialog/acEnt.png"));
+                        frame.setAcceptIcon(new ImageIcon(getClass().getResource("gui/dialog/acEnt.png")));
                     }
                 });
             }
@@ -482,11 +495,11 @@ public class Application {
 
         @Override
         public void mouseEntered(MouseEvent e) {
-            if (frame.incomingVisible()) {
+            if (frame.incomingVisible()){
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setAcceptIcon(new ImageIcon("gui/dialog/acEnt.png"));
+                        frame.setAcceptIcon(new ImageIcon(getClass().getResource("gui/dialog/acEnt.png")));
                     }
                 });
             }
@@ -494,23 +507,22 @@ public class Application {
 
         @Override
         public void mouseExited(MouseEvent e) {
-            if (frame.incomingVisible()) {
+            if (frame.incomingVisible()){
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setAcceptIcon(new ImageIcon("gui/dialog/acIcon.png"));
+                        frame.setAcceptIcon(new ImageIcon(getClass().getResource("gui/dialog/acIcon.png")));
                     }
                 });
             }
         }
     }
-
-    private class RejectListener implements MouseListener {
+    private class RejectListener implements MouseListener{
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (frame.incomingVisible()) {
-                try {
+            if (frame.incomingVisible()){
+                try{
                     rejectIncomingCall();
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
@@ -518,7 +530,8 @@ public class Application {
                             frame.dialogSetVisible(false);
                         }
                     });
-                } catch (IOException ex) {
+                }
+                catch (IOException ex){
                     ex.printStackTrace();
                 }
             }
@@ -526,11 +539,11 @@ public class Application {
 
         @Override
         public void mousePressed(MouseEvent e) {
-            if (frame.incomingVisible()) {
+            if (frame.incomingVisible()){
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setRejectIcon(new ImageIcon("gui/dialog/rejPrs.png"));
+                        frame.setRejectIcon(new ImageIcon(getClass().getResource("gui/dialog/rejPrs.png")));
                     }
                 });
             }
@@ -538,11 +551,11 @@ public class Application {
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            if (frame.incomingVisible()) {
+            if (frame.incomingVisible()){
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setRejectIcon(new ImageIcon("gui/dialog/rejEnt.png"));
+                        frame.setRejectIcon(new ImageIcon(getClass().getResource("gui/dialog/rejEnt.png")));
                     }
                 });
             }
@@ -550,11 +563,11 @@ public class Application {
 
         @Override
         public void mouseEntered(MouseEvent e) {
-            if (frame.incomingVisible()) {
+            if (frame.incomingVisible()){
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setRejectIcon(new ImageIcon("gui/dialog/rejEnt.png"));
+                        frame.setRejectIcon(new ImageIcon(getClass().getResource("gui/dialog/rejEnt.png")));
                     }
                 });
             }
@@ -562,18 +575,17 @@ public class Application {
 
         @Override
         public void mouseExited(MouseEvent e) {
-            if (frame.incomingVisible()) {
+            if (frame.incomingVisible()){
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setRejectIcon(new ImageIcon("gui/dialog/rejIcon.png"));
+                        frame.setRejectIcon(new ImageIcon(getClass().getResource("gui/dialog/rejIcon.png")));
                     }
                 });
             }
         }
     }
-
-    private class NickTextListener implements KeyListener {
+    private class NickTextListener implements KeyListener{
 
         @Override
         public void keyTyped(KeyEvent e) {
@@ -596,8 +608,7 @@ public class Application {
             }
         }
     }
-
-    private class RemoteAddressListener implements KeyListener {
+    private class RemoteAddressListener implements KeyListener{
 
         @Override
         public void keyTyped(KeyEvent e) {
@@ -614,8 +625,7 @@ public class Application {
 
         }
     }
-
-    private class WriteMsgListener implements KeyListener {
+    private class WriteMsgListener implements KeyListener{
 
         @Override
         public void keyTyped(KeyEvent e) {
@@ -629,12 +639,12 @@ public class Application {
 
         @Override
         public void keyReleased(KeyEvent e) {
-            if (e.getKeyChar() == '\n') {
+            if (e.getKeyChar() == '\n'){
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
                         String msg = frame.getMsg().split("\n")[0];
-                        if (msg.length() > 0) {
+                        if (msg.length() > 0){
                             frame.appendMyMsg(msg);
                             Sounds.SEND.play();
                             connection.sendMsg(msg);
