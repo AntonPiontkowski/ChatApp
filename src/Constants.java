@@ -9,6 +9,7 @@ public class Constants {
     public static final int FRAME_HEIGHT_DEFAULT = 599;
     public static final int PORT = 28411;
     public static final int NICK_LENGTH_MAX = 15;
+    public static final int MSG_LENGTH_MAX = 100;
     public static final String DEFAULT_NAME = "Unnamed";
     public static final String DEFAULT_VER = "ChatApp 2015";
 

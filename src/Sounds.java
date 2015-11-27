@@ -19,8 +19,7 @@ public enum Sounds {
 
     Sounds(String fileName) {
         try {
-            File soundFile = new File(fileName);
-            AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(getClass().getResource(fileName));
             clip = AudioSystem.getClip();
             clip.open(audioIn);
         } catch (Exception e) {
