@@ -202,12 +202,9 @@ public class GUI extends JFrame {
         this.textWriteMsg.setText("");
         return msg;
     }
-<<<<<<< HEAD
     public String getMsgText(){
         return this.textWriteMsg.getText();
     }
-=======
->>>>>>> c4521e745c4f4e010ce3fede0da9ff0eaf5fdd94
     public void setMsg(String msg){
         this.textWriteMsg.setText(msg);
     }

@@ -1,10 +1,6 @@
 import javax.swing.*;
 
-<<<<<<< HEAD
 public class Contact{
-=======
-public class Contact {
->>>>>>> c4521e745c4f4e010ce3fede0da9ff0eaf5fdd94
     private String nick;
     private String addr;
     private boolean isOnline;

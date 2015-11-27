@@ -59,20 +59,14 @@ public class Application {
         this.commandListenerThread.addObserver(new Observer() {
             @Override
             public void update(Observable o, Object arg) {
-<<<<<<< HEAD
                 if (commandListenerThread.getLastCommand() != null) {
                     if (commandListenerThread.getLastCommand() instanceof NickCommand) {
-=======
-                if (commandListenerThread.getLastCommand() != null){
-                    if (commandListenerThread.getLastCommand() instanceof NickCommand){
->>>>>>> c4521e745c4f4e010ce3fede0da9ff0eaf5fdd94
                         Sounds.INCOMING.play();
                         frame.incomingCall(((NickCommand) commandListenerThread.getLastCommand()).getNick());
                         frame.addAcceptListener(new AcceptListener());
                         frame.addRejectListener(new RejectListener());
                         commandListenerThread.stop();
-                    }
-                    else if (commandListenerThread.getLastCommand() instanceof MessageCommand){
+                    } else if (commandListenerThread.getLastCommand() instanceof MessageCommand) {
                         Sounds.RECEIVE.play();
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
@@ -80,14 +74,13 @@ public class Application {
                                 frame.appendMsg(((MessageCommand) commandListenerThread.getLastCommand()).getMessage());
                             }
                         });
-                    }
-                    else if (Checker.getType(commandListenerThread.getLastCommand().getType().toString()) != null){
-                        switch (commandListenerThread.getLastCommand().getType()){
-                            case ACCEPT:{
+                    } else if (Checker.getType(commandListenerThread.getLastCommand().getType().toString()) != null) {
+                        switch (commandListenerThread.getLastCommand().getType()) {
+                            case ACCEPT: {
                                 callListenerThread.setBusy(true);
                                 break;
                             }
-                            case REJECT:{
+                            case REJECT: {
                                 callListenerThread.setBusy(false);
                                 SwingUtilities.invokeLater(new Runnable() {
                                     @Override
@@ -98,7 +91,7 @@ public class Application {
                                 });
                                 break;
                             }
-                            case DISCONNECT:{
+                            case DISCONNECT: {
                                 SwingUtilities.invokeLater(new Runnable() {
                                     @Override
                                     public void run() {
@@ -113,8 +106,7 @@ public class Application {
                             }
                         }
                     }
-                }
-                else {
+                } else {
                     commandListenerThread.stop();
                     connection = null;
                     commandListenerThread = null;
@@ -178,24 +170,9 @@ public class Application {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-<<<<<<< HEAD
             if (frame.sendIsEnabled()) {
                 sending();
             }
-=======
-            if (frame.sendIsEnabled())
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        String msg = frame.getMsg();
-                        if (msg.length() > 0){
-                            frame.appendMyMsg(msg);
-                            Sounds.SEND.play();
-                            connection.sendMsg(msg);
-                        }
-                    }
-                });
->>>>>>> c4521e745c4f4e010ce3fede0da9ff0eaf5fdd94
             else
                 Sounds.DISABLED.play();
         }
@@ -668,27 +645,12 @@ public class Application {
 
         @Override
         public void keyReleased(KeyEvent e) {
-<<<<<<< HEAD
             StringBuilder b = new StringBuilder(frame.getMsgText());
             if (b.length() > Constants.MSG_LENGTH_MAX) {
                 frame.setMsg(b.delete(Constants.MSG_LENGTH_MAX, b.length()).toString());
             }
             if (e.getKeyChar() == '\n'){
                 sending();
-=======
-            if (e.getKeyChar() == '\n'){
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        String msg = frame.getMsg().split("\n")[0];
-                        if (msg.length() > 0){
-                            frame.appendMyMsg(msg);
-                            Sounds.SEND.play();
-                            connection.sendMsg(msg);
-                        }
-                    }
-                });
->>>>>>> c4521e745c4f4e010ce3fede0da9ff0eaf5fdd94
             }
         }
     }
