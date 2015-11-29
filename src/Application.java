@@ -231,7 +231,7 @@ public class Application {
                     caller.setRemoteAddress(new InetSocketAddress(frame.getRemoteAddress(),Constants.PORT));
                     connection = caller.call();
                     if (connection == null){
-                        // TODO WRITE CALLSTATUS TO THE TEXT FIELD OR SHOW A MESSAGE WITH CALL STATUS
+                        frame.appendBroken("Couldn't connect !");
                     }
                     else{
                         commandListenerThread = new CommandListenerThread(connection);
@@ -341,6 +341,7 @@ public class Application {
                         e2.printStackTrace();
                     }
                     catch (IOException e3){
+                        frame.appendBroken("Couldn't bind port !");
                         e3.printStackTrace();
                     }
                }

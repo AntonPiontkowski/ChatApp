@@ -5,10 +5,7 @@ public class Main {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                GUI frame = new GUI();
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setVisible(true);
-                Application app = new Application(frame);
+                Application app = new Application(new GUI());
             }
         });
     }

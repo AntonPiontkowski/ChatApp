@@ -20,9 +20,9 @@ public class GUI extends JFrame {
     private JTextField  textRemoteAddress = new JTextField ();
     private JTextField  textRemoteNick = new JTextField ();
     private JTextField  textWriteMsg = new JTextField ();
-    private JTextArea textHistoryMsg = new JTextArea();
 
     private JPanel leftBar = new JPanel();
+    private JPanel textHistoryMsg = new JPanel();
 
     private JLabel remoteAddress = new JLabel("Addr");
     private JLabel remoteNick = new JLabel("Nick");
@@ -43,11 +43,8 @@ public class GUI extends JFrame {
     private Font shrutiRegFont;
     private Font hpLightFont;
 
-    private Color dark1 = new Color(45, 45, 45);
-    private Color dark2 = new Color(38, 38, 38);
-    private Color gray1 = new Color(208, 208, 208);
-    private Color gray2 = new Color(120, 120, 120);
-    private Color brwn1 = new Color(95, 85, 78);
+
+
 
 
     public GUI(){
@@ -60,7 +57,7 @@ public class GUI extends JFrame {
         this.setMinimumSize(new Dimension(Constants.FRAME_WIDTH_DEFAULT, Constants.FRAME_HEIGHT_DEFAULT));
         this.setTitle(Constants.DEFAULT_VER);
         this.setLayout(null);
-        getContentPane().setBackground(dark1);
+        getContentPane().setBackground(Colors.dark1);
 
 
         // Fonts importing
@@ -89,15 +86,15 @@ public class GUI extends JFrame {
         msgHistScroll.getVerticalScrollBar().setUI(scrollBar);
 
         // Left bar
-        leftBar.setBackground(dark2);
+        leftBar.setBackground(Colors.dark2);
         leftBar.setLayout(null);
         leftBar.setBorder(BorderFactory.createEtchedBorder(1));
         this.add(leftBar);
 
         // Local nick
         textLocalNick.setFont(hpLightFont.deriveFont(18f));
-        textLocalNick.setForeground(brwn1);
-        textLocalNick.setDisabledTextColor(gray1);
+        textLocalNick.setForeground(Colors.brwn1);
+        textLocalNick.setDisabledTextColor(Colors.gray1);
         textLocalNick.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
         textLocalNick.setBounds(25, 30, 150, 30);
         leftBar.add(textLocalNick);
@@ -107,7 +104,7 @@ public class GUI extends JFrame {
         leftBar.add(btnApply);
 
         JLabel bg = new JLabel("");
-        bg.setIcon(new ImageIcon(DummyImage.create(262, 85, brwn1)));
+        bg.setIcon(new ImageIcon(DummyImage.create(262, 85, Colors.brwn1)));
         bg.setBounds(2, 0, 260, 85);
         leftBar.add(bg);
 
@@ -121,14 +118,14 @@ public class GUI extends JFrame {
         textRemoteNick.setBounds(100, 225, 135, 25);
         textRemoteNick.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
         textRemoteNick.setFont(hpLightFont.deriveFont(15f));
-        textRemoteNick.setDisabledTextColor(gray1);
+        textRemoteNick.setDisabledTextColor(Colors.gray1);
         textRemoteNick.setEnabled(false);
         leftBar.add(textRemoteNick);
 
         textRemoteAddress.setBounds(100, 265, 135, 25);
         textRemoteAddress.setFont(hpLightFont.deriveFont(15f));
-        textRemoteAddress.setForeground(brwn1);
-        textRemoteAddress.setDisabledTextColor(gray1);
+        textRemoteAddress.setForeground(Colors.brwn1);
+        textRemoteAddress.setDisabledTextColor(Colors.gray1);
         textRemoteAddress.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
         textRemoteAddress.setEnabled(false);
         leftBar.add(textRemoteAddress);
@@ -147,12 +144,12 @@ public class GUI extends JFrame {
 
         remoteNick.setBounds(25, 225, 60, 25);
         remoteNick.setFont(hpLightFont.deriveFont(14f));
-        remoteNick.setForeground(brwn1);
+        remoteNick.setForeground(Colors.brwn1);
         leftBar.add(remoteNick);
 
         remoteAddress.setBounds(25, 265, 60, 25);
         remoteAddress.setFont(hpLightFont.deriveFont(14f));
-        remoteAddress.setForeground(brwn1);
+        remoteAddress.setForeground(Colors.brwn1);
         leftBar.add(remoteAddress);
 
         // Contacts
@@ -161,12 +158,12 @@ public class GUI extends JFrame {
 
         // Messaging
         msgHistScroll.setBorder(null);
-        textHistoryMsg.setBackground(dark1);
-        textHistoryMsg.setEditable(false);
+        textHistoryMsg.setBackground(Colors.dark1);
+        textHistoryMsg.setLayout(new BoxLayout(textHistoryMsg, BoxLayout.Y_AXIS));
         textWriteMsg.setFont(segoeRegFont);
-        textWriteMsg.setForeground(gray2);
-        textWriteMsg.setBackground(dark2);
-        textWriteMsg.setBorder(BorderFactory.createLineBorder(dark2, 2));
+        textWriteMsg.setForeground(Colors.gray2);
+        textWriteMsg.setBackground(Colors.dark2);
+        textWriteMsg.setBorder(BorderFactory.createLineBorder(Colors.dark2, 2));
         btnSend.setIcon(new ImageIcon(getClass().getResource("gui/frame/sendIcon.png")));
         btnSend.setDisabledIcon(new ImageIcon(getClass().getResource("gui/frame/sendDsbl.png")));
         this.add(msgHistScroll);
@@ -176,6 +173,9 @@ public class GUI extends JFrame {
         btnSend.setEnabled(false);
         textHistoryMsg.setEnabled(false);
 
+
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setVisible(true);
     }
 
      // Getters & Setters
@@ -232,7 +232,7 @@ public class GUI extends JFrame {
         this.textRemoteAddress.setEnabled(false);
         this.btnDisconnect.setEnabled(true);
         this.textWriteMsg.setEnabled(true);
-        this.textHistoryMsg.setText("");
+        this.textHistoryMsg.removeAll();
         this.btnSend.setEnabled(true);
     }
     public void setDisconnected(){
@@ -257,17 +257,18 @@ public class GUI extends JFrame {
 
     // Adding new text to the text area
     public void appendMsg(String msg){
-        StringBuilder line = new StringBuilder(this.textRemoteNick.getText() + "  " + LocalDateTime.now() + "\n"
-                + " " + msg + "\n" + "\n");
-        this.textHistoryMsg.append(line.toString());
+        this.textHistoryMsg.add(new Message(this.textRemoteNick.getText(), LocalDateTime.now().toString(),
+                msg, false));
+        this.revalidate();
     }
     public void appendMyMsg(String msg){
-        StringBuilder line = new StringBuilder(this.textLocalNick.getText() + "  " + LocalDateTime.now() + "\n"
-                + " " + msg + "\n" + "\n");
-        this.textHistoryMsg.append(line.toString());
+        this.textHistoryMsg.add(new Message(this.textLocalNick.getText(), LocalDateTime.now().toString(),
+                msg, true));
+        this.revalidate();
     }
-    public void appendBroken(String line){
-        this.textHistoryMsg.append(line);
+    public void appendBroken(String issue){
+        this.textHistoryMsg.add(new MessageConState(issue));
+        this.revalidate();
     }
 
     // Listeners
@@ -345,8 +346,8 @@ public class GUI extends JFrame {
             GraphicsEnvironment env =
                     GraphicsEnvironment.getLocalGraphicsEnvironment();
             this.setBounds(0, (int)(env.getMaximumWindowBounds().getHeight() - 50), 200, 50);
-            this.setBackground(brwn1);
-            getContentPane().setBackground(brwn1);
+            this.setBackground(Colors.brwn1);
+            getContentPane().setBackground(Colors.brwn1);
             acceptBtn.setBounds(120, 9, 32, 32);
             acceptBtn.setIcon(new ImageIcon(getClass().getResource("gui/dialog/acIcon.png")));
             this.add(acceptBtn);
@@ -356,7 +357,7 @@ public class GUI extends JFrame {
             user.setText(userNick);
             user.setBounds(10, 15, 100, 20);
             user.setFont(hpLightFont.deriveFont(18f));
-            user.setForeground(gray1);
+            user.setForeground(Colors.gray1);
             this.add(user);
             this.setEnabled(true);
             this.setAlwaysOnTop(true);
