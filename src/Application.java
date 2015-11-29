@@ -41,6 +41,7 @@ public class Application {
         this.frame.setRemoteAddress(connection.getSocketAddress().toString());
         this.frame.setRemoteNick(((NickCommand) commandListenerThread.getLastCommand()).getNick());
         this.connection.send(Command.CommandType.ACCEPT.toString());
+        this.frame.cleanHist();
         this.frame.setConnected();
         this.callListenerThread.setBusy(true);
         commandListenerThread = new CommandListenerThread(connection);
@@ -229,9 +230,16 @@ public class Application {
             // TODO CONNECTING
                 if (frame.getRemoteAddress().length() > 3){
                     caller.setRemoteAddress(new InetSocketAddress(frame.getRemoteAddress(),Constants.PORT));
+                    frame.cleanHist();
                     connection = caller.call();
                     if (connection == null){
-                        frame.appendBroken("Couldn't connect !");
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                frame.appendBroken("Couldn't connect ! The user may be offline");
+                            }
+                        });
+                        Sounds.ERROR.play();
                     }
                     else{
                         commandListenerThread = new CommandListenerThread(connection);
@@ -341,8 +349,13 @@ public class Application {
                         e2.printStackTrace();
                     }
                     catch (IOException e3){
-                        frame.appendBroken("Couldn't bind port !");
-                        e3.printStackTrace();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                frame.appendBroken("Couldn't bind port !");
+                            }
+                        });
+                        Sounds.ERROR.play();
                     }
                }
                 else {

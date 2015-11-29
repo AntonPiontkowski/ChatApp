@@ -1,5 +1,7 @@
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalScrollBarUI;
+import javax.swing.plaf.metal.MetalTabbedPaneUI;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -23,6 +25,8 @@ public class GUI extends JFrame {
 
     private JPanel leftBar = new JPanel();
     private JPanel textHistoryMsg = new JPanel();
+    private JPanel locConts = new JPanel();
+    private JPanel allConts = new JPanel();
 
     private JLabel remoteAddress = new JLabel("Addr");
     private JLabel remoteNick = new JLabel("Nick");
@@ -34,6 +38,10 @@ public class GUI extends JFrame {
     private JLabel userLogo;
 
     private JScrollPane msgHistScroll = new JScrollPane(textHistoryMsg);
+    private JScrollPane locContsScroll = new JScrollPane(locConts);
+    private JScrollPane allContsScroll = new JScrollPane(allConts);
+
+    private JTabbedPane contsTabs = new JTabbedPane();
 
     private CustomScrollBar scrollBar = new CustomScrollBar();
 
@@ -152,8 +160,27 @@ public class GUI extends JFrame {
         remoteAddress.setForeground(Colors.brwn1);
         leftBar.add(remoteAddress);
 
+
         // Contacts
-        // TODO
+        locConts.setBackground(Colors.dark1);
+        locContsScroll.setBackground(Colors.dark1);
+        locContsScroll.setBorder(BorderFactory.createLineBorder(Colors.dark1));
+
+        allConts.setBackground(Colors.dark1);
+        allContsScroll.setBackground(Colors.dark1);
+        allContsScroll.setBorder(BorderFactory.createLineBorder(Colors.dark1));
+
+        contsTabs.add("Local", locContsScroll);
+        contsTabs.add("All", allContsScroll);
+        contsTabs.setBackground(Colors.dark3);
+        contsTabs.setForeground(Colors.gray1);
+        contsTabs.setTabPlacement(3);
+        UIManager.put("TabbedPane.selected", Colors.dark1);
+        UIManager.put("TabbedPane.borderColor", Colors.dark1);
+        UIManager.put("TabbedPane.focus", Colors.dark1);
+        contsTabs.setUI(new CustomTabbedPane());
+        leftBar.add(contsTabs);
+
 
 
         // Messaging
@@ -271,6 +298,10 @@ public class GUI extends JFrame {
         this.revalidate();
     }
 
+    public void cleanHist(){
+        this.textHistoryMsg.removeAll();
+    }
+
     // Listeners
     public void addSendListener(MouseListener sendListener){
         this.btnSend.addMouseListener(sendListener);
@@ -326,6 +357,7 @@ public class GUI extends JFrame {
         this.msgHistScroll.setBounds(311, 20, getWidth() - 376, getHeight() - 120);
         this.textWriteMsg.setBounds(311, getHeight() - 87, msgHistScroll.getWidth() - 60, 30);
         this.btnSend.setBounds(textWriteMsg.getX() + textWriteMsg.getWidth(), textWriteMsg.getY(), 60, 30);
+        this.contsTabs.setBounds(30, 350, 200, leftBar.getY() + leftBar.getHeight() - 358);
         this.validate();
     }
 
@@ -429,4 +461,26 @@ public class GUI extends JFrame {
         }
     }
 
+    // Custom TabbedPane
+    private class CustomTabbedPane extends MetalTabbedPaneUI{
+        @Override
+        protected void paintBottomTabBorder(int tabIndex, Graphics g, int x, int y, int w, int h, int btm, int rght, boolean isSelected) {
+        }
+
+        @Override
+        protected void paintLeftTabBorder(int tabIndex, Graphics g, int x, int y, int w, int h, int btm, int rght, boolean isSelected) {
+        }
+
+        @Override
+        protected void paintRightTabBorder(int tabIndex, Graphics g, int x, int y, int w, int h, int btm, int rght, boolean isSelected) {
+        }
+
+        @Override
+        protected void paintTopTabBorder(int tabIndex, Graphics g, int x, int y, int w, int h, int btm, int rght, boolean isSelected) {
+        }
+
+        @Override
+        protected void paintContentBorder(Graphics g, int tabPlacement, int selectedIndex) {
+        }
+    }
 }
