@@ -33,6 +33,7 @@ public class Application {
         this.frame.addAddrKeyListener(new RemoteAddressListener());
         this.frame.addMsgKeyListener(new WriteMsgListener());
         this.frame.addComponentListener(new ResizeListener());
+        this.frame.addUserAddListener(new BtnUserAddListener());
     }
 
 
@@ -472,6 +473,40 @@ public class Application {
                         frame.setDisconnectIcon(new ImageIcon(getClass().getResource("gui/frame/disconIcon.png")));
                     }
                 });
+        }
+    }
+    private class BtnUserAddListener implements MouseListener{
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (frame.userAddIsEnabled()){
+                // TODO
+            }
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (frame.userAddIsEnabled()){
+                frame.setUserAddIcon(new ImageIcon(getClass().getResource("gui/frame/userAddPrs.png")));            }
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            if (frame.userAddIsEnabled()){
+                frame.setUserAddIcon(new ImageIcon(getClass().getResource("gui/frame/userAddEnt.png")));            }
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            if (frame.userAddIsEnabled()){
+                frame.setUserAddIcon(new ImageIcon(getClass().getResource("gui/frame/userAddEnt.png")));            }
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            if (frame.userAddIsEnabled()){
+                frame.setUserAddIcon(new ImageIcon(getClass().getResource("gui/frame/userAddIcon.png")));
+            }
         }
     }
     private class AcceptListener implements MouseListener{

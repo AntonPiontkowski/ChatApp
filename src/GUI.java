@@ -35,6 +35,7 @@ public class GUI extends JFrame {
     private JLabel btnApply = new JLabel("");
     private JLabel btnConnect = new JLabel("");
     private JLabel btnDisconnect = new JLabel("");
+    private JLabel btnUserAdd = new JLabel("");
     private JLabel userLogo;
 
     private JScrollPane msgHistScroll = new JScrollPane(textHistoryMsg);
@@ -116,11 +117,17 @@ public class GUI extends JFrame {
         bg.setBounds(2, 0, 260, 85);
         leftBar.add(bg);
 
-        // User logo
+
+        // Adding cont
+        btnUserAdd.setIcon(new ImageIcon(getClass().getResource("gui/frame/userAddIcon.png")));
+        btnUserAdd.setBounds(150, 175, 25, 25);
+        leftBar.add(btnUserAdd);
+
         userLogo = new JLabel("");
         userLogo.setIcon(new ImageIcon(getClass().getResource("gui/frame/user.png")));
         userLogo.setBounds(85, 108, 90, 90);
         leftBar.add(userLogo);
+
 
         // Remote info
         textRemoteNick.setBounds(100, 225, 135, 25);
@@ -250,6 +257,9 @@ public class GUI extends JFrame {
     public boolean disconIsEnabled(){
         return this.btnDisconnect.isEnabled();
     }
+    public boolean userAddIsEnabled(){
+        return this.btnUserAdd.isEnabled();
+    }
     public boolean incomingVisible(){
         return this.incoming.isVisible();
     }
@@ -325,10 +335,13 @@ public class GUI extends JFrame {
         this.textRemoteAddress.addKeyListener(keyListener);
     }
     public void addAcceptListener(MouseListener mouseListener){
-        incoming.acceptAddListener(mouseListener);
+        this.incoming.acceptAddListener(mouseListener);
     }
     public void addRejectListener(MouseListener mouseListener){
-        incoming.rejectBtn.addMouseListener(mouseListener);
+        this.incoming.rejectBtn.addMouseListener(mouseListener);
+    }
+    public void addUserAddListener(MouseListener mouseListener){
+        this.btnUserAdd.addMouseListener(mouseListener);
     }
 
     // Changing icons from Application class
@@ -350,7 +363,8 @@ public class GUI extends JFrame {
     public void setRejectIcon(ImageIcon icon){
         this.incoming.setRejIcon(icon);
     }
-
+    public void setUserAddIcon(ImageIcon icon){
+        this.btnUserAdd.setIcon(icon);   }
     // Changing location
     public void setLocations(){
         this.leftBar.setBounds(-2, -2, 264, getHeight() - 35);
