@@ -10,6 +10,7 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
+import java.io.File;
 
 /*
 
@@ -236,7 +237,12 @@ public class Application {
             // TODO CONNECTING
                 if (frame.getRemoteAddress().length() > 3){
                     caller.setRemoteAddress(new InetSocketAddress(frame.getRemoteAddress(),Constants.PORT));
-                    frame.cleanHist();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            frame.cleanHist();
+                        }
+                    });
                     connection = caller.call();
                     if (connection == null){
                         SwingUtilities.invokeLater(new Runnable() {
@@ -366,8 +372,133 @@ public class Application {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                for (int i = 0; i < allConts.size(); i++)
+                                for (int i = 0; i < allConts.size(); i++) {
                                     frame.addServerContact(allConts.get(i));
+                                    allConts.get(i).addMouseListener(new MouseListener() {
+                                        @Override
+                                        public void mouseClicked(MouseEvent e) {
+                                            Contact c = (Contact) e.getSource();
+                                            caller.setRemoteAddress(new InetSocketAddress(c.getAddr(),Constants.PORT));
+                                            frame.cleanHist();
+                                            connection = caller.call();
+                                            if (connection == null){
+                                                SwingUtilities.invokeLater(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        frame.appendBroken("Couldn't connect ! The user may be offline");
+                                                    }
+                                                });
+                                                Sounds.ERROR.play();
+                                            }
+                                            else {
+                                                commandListenerThread = new CommandListenerThread(connection);
+                                                addCommandObserver();
+                                                frame.setRemoteNick(caller.getRemoteNick());
+                                                SwingUtilities.invokeLater(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        frame.setConnected();
+                                                    }
+                                                });
+                                                commandListenerThread.start();
+                                                addCommandObserver();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void mousePressed(MouseEvent e) {
+
+                                        }
+
+                                        @Override
+                                        public void mouseReleased(MouseEvent e) {
+
+                                        }
+
+                                        @Override
+                                        public void mouseEntered(MouseEvent e) {
+                                            Contact c = (Contact) e.getSource();
+                                            c.setBackground(Color.DARK_GRAY);
+                                        }
+
+                                        @Override
+                                        public void mouseExited(MouseEvent e) {
+                                            Contact c = (Contact) e.getSource();
+                                            c.setDefaulBackground();
+                                        }
+                                    });
+                                }
+
+                            }
+                        });
+
+                        ContactsFile.checkFile();
+                        locConts = ContactsFile.readFile();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (int i = 0; i < locConts.size(); i++) {
+                                    frame.addLocalContact(locConts.get(i));
+                                    locConts.get(i).addMouseListener(new MouseListener() {
+                                        @Override
+                                        public void mouseClicked(MouseEvent e) {
+                                            Contact c = (Contact) e.getSource();
+                                            caller.setRemoteAddress(new InetSocketAddress(c.getAddr(),Constants.PORT));
+                                            SwingUtilities.invokeLater(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    frame.cleanHist();
+                                                    frame.setRemoteAddress(c.getAddr());
+                                                }
+                                            });
+                                            connection = caller.call();
+                                            if (connection == null){
+                                                SwingUtilities.invokeLater(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            frame.appendBroken("Couldn't connect ! The user may be offline");
+                                                        }
+                                                    });
+                                                Sounds.ERROR.play();
+                                            }
+                                            else {
+                                                commandListenerThread = new CommandListenerThread(connection);
+                                                addCommandObserver();
+                                                frame.setRemoteNick(caller.getRemoteNick());
+                                                SwingUtilities.invokeLater(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            frame.setConnected();
+                                                        }
+                                                    });
+                                                commandListenerThread.start();
+                                                addCommandObserver();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void mousePressed(MouseEvent e) {
+
+                                        }
+
+                                        @Override
+                                        public void mouseReleased(MouseEvent e) {
+
+                                        }
+
+                                        @Override
+                                        public void mouseEntered(MouseEvent e) {
+                                            Contact c = (Contact) e.getSource();
+                                            c.setBackground(Color.DARK_GRAY);
+                                        }
+
+                                        @Override
+                                        public void mouseExited(MouseEvent e) {
+                                            Contact c = (Contact) e.getSource();
+                                            c.setDefaulBackground();
+                                        }
+                                    });
+                                }
                             }
                         });
                     }
@@ -506,7 +637,17 @@ public class Application {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (frame.userAddIsEnabled()){
-                // TODO
+                Contact addContact = new Contact(frame.getRemoteNick(), server.getIpForNick(frame.getRemoteNick()), true);
+                if (locConts == null)
+                    locConts = new ArrayList<>();
+                locConts.add(addContact);
+                ContactsFile.writeFile(locConts);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        frame.addLocalContact(addContact);
+                    }
+                });
             }
         }
 
@@ -729,4 +870,5 @@ public class Application {
             }
         }
     }
+
 }

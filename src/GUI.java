@@ -108,6 +108,7 @@ public class GUI extends JFrame {
         textLocalNick.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
         textLocalNick.setBounds(25, 30, 150, 30);
         leftBar.add(textLocalNick);
+
         btnApply.setIcon(new ImageIcon(getClass().getResource("gui/frame/applyIcon.png")));
         btnApply.setDisabledIcon(new ImageIcon(getClass().getResource("gui/frame/applyDsbl.png")));
         btnApply.setBounds(175, 30, 60, 30);
@@ -171,6 +172,7 @@ public class GUI extends JFrame {
 
         // Contacts
         locConts.setBackground(Colors.dark2);
+        locConts.setLayout(new BoxLayout(locConts, BoxLayout.Y_AXIS));
         locContsScroll.setBackground(Colors.dark2);
         locContsScroll.setBorder(BorderFactory.createLineBorder(Colors.dark1));
 
@@ -274,7 +276,6 @@ public class GUI extends JFrame {
         this.textWriteMsg.setEnabled(true);
         this.textHistoryMsg.removeAll();
         this.btnSend.setEnabled(true);
-        this.contsTabs.setEnabled(false);
     }
     public void setDisconnected(){
         this.btnDisconnect.setEnabled(false);

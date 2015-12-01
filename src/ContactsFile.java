@@ -6,44 +6,66 @@ public class ContactsFile {
 
     private static ServerConnection db;
 
-    public ArrayList<Contact> readFile(ServerConnection db){
+    public static ArrayList<Contact> readFile(){
         ArrayList<Contact> contactsList = new ArrayList<>();
+
         try(Scanner in = new Scanner(new FileInputStream("contacts.txt"),"UTF-8")){
-            while (in.hasNextLine()){
-                contactsList.add(readContact(in));
+            if (in.hasNextLine()){
+                int amount = in.nextInt();
+                for (int i = 1; i == amount; i++)
+                    contactsList.add(readContact(in));
+                return contactsList;
             }
-            return contactsList;
+            else
+                return null;
         }
         catch (FileNotFoundException e){
-            File contacts = new File("contacts.txt");
             return null;
         }
     }
 
     public static void writeFile(ArrayList<Contact> contactsList){
+        File contacts = new File("contacts.txt");
+        contacts.delete();
         try(PrintWriter out = new PrintWriter("contacts.txt", "UTF-8")){
-            for (int i = 0; i < contactsList.size(); i++){
-                writeContact(contactsList.get(i), out);
-            }
+            contacts.createNewFile();
+            out.println(contactsList.size());
+            for (int i = 1; i == contactsList.size(); i++)
+                writeContact(contactsList.get(i - 1), out);
         }
         catch (FileNotFoundException e){
             e.printStackTrace();
         }
         catch (UnsupportedEncodingException e2){
             e2.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     public static Contact readContact(Scanner in){
         String userInfo = in.nextLine();
-        String[] info = userInfo.split("\\|");
+        String[] info = userInfo.split("|/");
+        String[] ipInfo = info[1].split(":");
         if (db.isNickOnline(info[0]))
-            return new Contact(info[0], info[1], true);
+            return new Contact(info[0], ipInfo[0], true);
         else
-            return new Contact(info[0], info[1], false);
+            return new Contact(info[0], ipInfo[0], false);
     }
 
     public static void writeContact(Contact contact, PrintWriter out){
         out.println(contact.getNick() + "|" + contact.getAddr());
+        out.flush();
+    }
+
+    public static void checkFile(){
+        File contacts = new File("contacts.txt");
+        try{
+            if (!contacts.exists()) {
+                contacts.createNewFile();
+            }
+        }catch (IOException e1){
+            e1.printStackTrace();
+        }
     }
 }

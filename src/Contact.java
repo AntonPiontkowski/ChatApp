@@ -32,4 +32,8 @@ public class Contact extends JPanel{
     public String getAddr(){
         return this.addr;
     }
+
+    public void setDefaulBackground(){
+        this.setBackground(Colors.dark1);
+    }
 }
