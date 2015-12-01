@@ -1,11 +1,13 @@
+import com.sun.corba.se.spi.activation.Server;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.UnknownHostException;
+import java.io.InputStreamReader;
+import java.net.*;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -16,6 +18,9 @@ CLASS THAT CONTROLS THE SET
  */
 
 public class Application {
+    private ArrayList<Contact> allConts;
+    private ArrayList<Contact> locConts;
+    private ServerConnection server;
     private Connection connection;
     private Caller caller;
     private CallListenerThread callListenerThread;
@@ -344,6 +349,27 @@ public class Application {
                             }
                         });
 
+
+                        URL myIp = new URL("http://checkip.amazonaws.com");
+                        BufferedReader in = new BufferedReader(new InputStreamReader(
+                                myIp.openStream()));
+                        String ip = in.readLine();
+                        in.close();
+
+
+                        server = new ServerConnection(ip, frame.getLocalNick());
+                        server.setServerAddress("jdbc:mysql://files.litvinov.in.ua/chatapp_server?" +
+                                "characterEncoding=utf-8&useUnicode=true");
+                        server.connect();
+                        server.goOnline();
+                        allConts = ContactsServer.readServer(server);
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (int i = 0; i < allConts.size(); i++)
+                                    frame.addServerContact(allConts.get(i));
+                            }
+                        });
                     }
 
                     catch (UnknownHostException e2){

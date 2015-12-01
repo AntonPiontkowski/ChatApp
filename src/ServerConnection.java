@@ -218,11 +218,4 @@ public class ServerConnection {
 		return s.replaceAll("['\";]", "").replaceAll("\\s", "");
 	}
 
-	public static void main(String[] args) {
-
-//		ServerConnection c = new ServerConnection();
-//		c.setServerAddress("jdbc:mysql://files.litvinov.in.ua/chatapp_server?characterEncoding=utf-8&useUnicode=true");
-//		c.connect();
-//		assert c.isConnected();
-	}
 }

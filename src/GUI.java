@@ -44,7 +44,6 @@ public class GUI extends JFrame {
 
     private JTabbedPane contsTabs = new JTabbedPane();
 
-    private CustomScrollBar scrollBar = new CustomScrollBar();
 
     private Incoming incoming;
 
@@ -92,7 +91,9 @@ public class GUI extends JFrame {
         UIManager.put("ToolTip.border", BorderFactory.createLineBorder(Color.WHITE));
 
         // Custom ScrollBar
-        msgHistScroll.getVerticalScrollBar().setUI(scrollBar);
+        msgHistScroll.getVerticalScrollBar().setUI(new CustomScrollBar());
+        allContsScroll.getVerticalScrollBar().setUI(new CustomScrollBar());
+        locContsScroll.getVerticalScrollBar().setUI(new CustomScrollBar());
 
         // Left bar
         leftBar.setBackground(Colors.dark2);
@@ -169,12 +170,13 @@ public class GUI extends JFrame {
 
 
         // Contacts
-        locConts.setBackground(Colors.dark1);
-        locContsScroll.setBackground(Colors.dark1);
+        locConts.setBackground(Colors.dark2);
+        locContsScroll.setBackground(Colors.dark2);
         locContsScroll.setBorder(BorderFactory.createLineBorder(Colors.dark1));
 
-        allConts.setBackground(Colors.dark1);
-        allContsScroll.setBackground(Colors.dark1);
+        allConts.setBackground(Colors.dark2);
+        allConts.setLayout(new BoxLayout(allConts, BoxLayout.Y_AXIS));
+        allContsScroll.setBackground(Colors.dark2);
         allContsScroll.setBorder(BorderFactory.createLineBorder(Colors.dark1));
 
         contsTabs.add("Local", locContsScroll);
@@ -186,6 +188,7 @@ public class GUI extends JFrame {
         UIManager.put("TabbedPane.borderColor", Colors.dark1);
         UIManager.put("TabbedPane.focus", Colors.dark1);
         contsTabs.setUI(new CustomTabbedPane());
+        contsTabs.setEnabled(false);
         leftBar.add(contsTabs);
 
 
@@ -271,6 +274,7 @@ public class GUI extends JFrame {
         this.textWriteMsg.setEnabled(true);
         this.textHistoryMsg.removeAll();
         this.btnSend.setEnabled(true);
+        this.contsTabs.setEnabled(false);
     }
     public void setDisconnected(){
         this.btnDisconnect.setEnabled(false);
@@ -281,12 +285,14 @@ public class GUI extends JFrame {
         this.textRemoteAddress.setText("");
         this.textRemoteNick.setText("");
         this.btnConnect.setEnabled(true);
+        this.contsTabs.setEnabled(true);
     }
     public void setApplied(){
         this.btnApply.setEnabled(false);
         this.textLocalNick.setEnabled(false);
         this.textRemoteAddress.setEnabled(true);
         this.btnConnect.setEnabled(true);
+        this.contsTabs.setEnabled(true);
     }
     public void dialogSetVisible(boolean visible){
         this.incoming.setVisible(visible);
@@ -310,6 +316,16 @@ public class GUI extends JFrame {
 
     public void cleanHist(){
         this.textHistoryMsg.removeAll();
+    }
+
+    // Contacs adding
+    public void addServerContact(Contact cont){
+        this.allConts.add(cont);
+        this.allConts.revalidate();
+    }
+    public void addLocalContact(Contact cont){
+        this.locConts.add(cont);
+        this.locConts.revalidate();
     }
 
     // Listeners
