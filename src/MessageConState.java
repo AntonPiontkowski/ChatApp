@@ -1,9 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class MessageConState extends JTextArea{
+public class MessageConState extends JTextArea {
 
-    public MessageConState(String issue){
+    public MessageConState(String issue) {
         this.setMaximumSize(new Dimension(1000, 60));
         this.setFont(this.getFont().deriveFont(20f));
         this.setForeground(Colors.red);

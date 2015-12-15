@@ -1,14 +1,11 @@
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalScrollBarUI;
 import javax.swing.plaf.metal.MetalTabbedPaneUI;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-
 
 /*
 
@@ -18,10 +15,10 @@ GRAPHICAL USER INTERFACE
  */
 
 public class GUI extends JFrame {
-    private JTextField textLocalNick = new JTextField ();
-    private JTextField  textRemoteAddress = new JTextField ();
-    private JTextField  textRemoteNick = new JTextField ();
-    private JTextField  textWriteMsg = new JTextField ();
+    private JTextField textLocalNick = new JTextField();
+    private JTextField textRemoteAddress = new JTextField();
+    private JTextField textRemoteNick = new JTextField();
+    private JTextField textWriteMsg = new JTextField();
 
     private JPanel leftBar = new JPanel();
     private JPanel textHistoryMsg = new JPanel();
@@ -52,14 +49,11 @@ public class GUI extends JFrame {
     private Font hpLightFont;
 
 
-
-
-
-    public GUI(){
+    public GUI() {
         // Frame
-        int toWidth = (int)((Toolkit.getDefaultToolkit().getScreenSize().getWidth()
+        int toWidth = (int) ((Toolkit.getDefaultToolkit().getScreenSize().getWidth()
                 - Constants.FRAME_WIDTH_DEFAULT) / 2);
-        int toHeight = (int)((Toolkit.getDefaultToolkit().getScreenSize().getHeight()
+        int toHeight = (int) ((Toolkit.getDefaultToolkit().getScreenSize().getHeight()
                 - Constants.FRAME_HEIGHT_DEFAULT) / 2);
         this.setBounds(toWidth, toHeight, Constants.FRAME_WIDTH_DEFAULT, Constants.FRAME_HEIGHT_DEFAULT);
         this.setMinimumSize(new Dimension(Constants.FRAME_WIDTH_DEFAULT, Constants.FRAME_HEIGHT_DEFAULT));
@@ -69,7 +63,7 @@ public class GUI extends JFrame {
 
 
         // Fonts importing
-        try{
+        try {
             segoeRegFont = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("gui/fonts/segoeui.ttf")).deriveFont(20f);
             shrutiRegFont = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("gui/fonts/tai.ttf")).deriveFont(30f);
             hpLightFont = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("gui/fonts/hp.ttf")).deriveFont(18f);
@@ -77,11 +71,9 @@ public class GUI extends JFrame {
             ge.registerFont(segoeRegFont);
             ge.registerFont(shrutiRegFont);
             ge.registerFont(hpLightFont);
-        }
-        catch (FontFormatException e){
+        } catch (FontFormatException e) {
             e.printStackTrace();
-        }
-        catch (IOException e2){
+        } catch (IOException e2) {
             e2.printStackTrace();
         }
 
@@ -96,7 +88,7 @@ public class GUI extends JFrame {
         locContsScroll.getVerticalScrollBar().setUI(new CustomScrollBar());
 
         // Left bar
-        leftBar.setBackground(Colors.dark2);
+        leftBar.setBackground(Colors.dark3);
         leftBar.setLayout(null);
         leftBar.setBorder(BorderFactory.createEtchedBorder(1));
         this.add(leftBar);
@@ -144,7 +136,7 @@ public class GUI extends JFrame {
         textRemoteAddress.setForeground(Colors.brwn1);
         textRemoteAddress.setDisabledTextColor(Colors.gray1);
         textRemoteAddress.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
-        textRemoteAddress.setEnabled(false);
+        // textRemoteAddress.setEnabled(false);
         leftBar.add(textRemoteAddress);
 
         btnConnect.setBounds(25, 310, 105, 30);
@@ -171,19 +163,21 @@ public class GUI extends JFrame {
 
 
         // Contacts
-        locConts.setBackground(Colors.dark2);
+        locConts.setBackground(Colors.dark3);
         locConts.setLayout(new BoxLayout(locConts, BoxLayout.Y_AXIS));
-        locContsScroll.setBackground(Colors.dark2);
-        locContsScroll.setBorder(BorderFactory.createLineBorder(Colors.dark1));
+        locContsScroll.setBackground(Colors.dark3);
+        locContsScroll.setBorder(BorderFactory.createLineBorder(Colors.dark3));
+        locConts.setEnabled(false);
 
-        allConts.setBackground(Colors.dark2);
+        allConts.setBackground(Colors.dark3);
         allConts.setLayout(new BoxLayout(allConts, BoxLayout.Y_AXIS));
-        allContsScroll.setBackground(Colors.dark2);
-        allContsScroll.setBorder(BorderFactory.createLineBorder(Colors.dark1));
+        allContsScroll.setBackground(Colors.dark3);
+        allContsScroll.setBorder(BorderFactory.createLineBorder(Colors.dark3));
+        allConts.setEnabled(false);
 
         contsTabs.add("Local", locContsScroll);
         contsTabs.add("All", allContsScroll);
-        contsTabs.setBackground(Colors.dark3);
+        contsTabs.setBackground(Colors.dark2);
         contsTabs.setForeground(Colors.gray1);
         contsTabs.setTabPlacement(3);
         UIManager.put("TabbedPane.selected", Colors.dark1);
@@ -194,15 +188,14 @@ public class GUI extends JFrame {
         leftBar.add(contsTabs);
 
 
-
         // Messaging
         msgHistScroll.setBorder(null);
         textHistoryMsg.setBackground(Colors.dark1);
         textHistoryMsg.setLayout(new BoxLayout(textHistoryMsg, BoxLayout.Y_AXIS));
         textWriteMsg.setFont(segoeRegFont);
         textWriteMsg.setForeground(Colors.gray2);
-        textWriteMsg.setBackground(Colors.dark2);
-        textWriteMsg.setBorder(BorderFactory.createLineBorder(Colors.dark2, 2));
+        textWriteMsg.setBackground(Colors.dark3);
+        textWriteMsg.setBorder(BorderFactory.createLineBorder(Colors.dark3, 2));
         btnSend.setIcon(new ImageIcon(getClass().getResource("gui/frame/sendIcon.png")));
         btnSend.setDisabledIcon(new ImageIcon(getClass().getResource("gui/frame/sendDsbl.png")));
         this.add(msgHistScroll);
@@ -217,67 +210,80 @@ public class GUI extends JFrame {
         this.setVisible(true);
     }
 
-     // Getters & Setters
-    public String getLocalNick(){
+    // Getters & Setters
+    public String getLocalNick() {
         return this.textLocalNick.getText();
     }
-    public String getRemoteAddress(){
+
+    public String getRemoteAddress() {
         return this.textRemoteAddress.getText();
     }
-    public void setLocalNick(String nick){
+
+    public void setLocalNick(String nick) {
         this.textLocalNick.setText(nick);
     }
-    public String getRemoteNick(){
+
+    public String getRemoteNick() {
         return this.textRemoteNick.getText();
     }
-    public void setRemoteNick(String remoteNick){
+
+    public void setRemoteNick(String remoteNick) {
         this.textRemoteNick.setText(remoteNick);
     }
-    public void setRemoteAddress(String remoteAddress){
+
+    public void setRemoteAddress(String remoteAddress) {
         this.textRemoteAddress.setText(remoteAddress);
     }
-    public String getMsg(){
+
+    public String getMsg() {
         String msg = this.textWriteMsg.getText();
         this.textWriteMsg.setText("");
         return msg;
     }
-    public String getMsgText(){
+
+    public String getMsgText() {
         return this.textWriteMsg.getText();
     }
-    public void setMsg(String msg){
+
+    public void setMsg(String msg) {
         this.textWriteMsg.setText(msg);
     }
 
     // Check enabled
-    public boolean sendIsEnabled(){
+    public boolean sendIsEnabled() {
         return this.btnSend.isEnabled();
     }
 
-    public boolean applyIsEnabled(){
+    public boolean applyIsEnabled() {
         return this.btnApply.isEnabled();
     }
-    public boolean conIsEnabled(){
+
+    public boolean conIsEnabled() {
         return this.btnConnect.isEnabled();
     }
-    public boolean disconIsEnabled(){
+
+    public boolean disconIsEnabled() {
         return this.btnDisconnect.isEnabled();
     }
-    public boolean userAddIsEnabled(){
+
+    public boolean userAddIsEnabled() {
         return this.btnUserAdd.isEnabled();
     }
-    public boolean incomingVisible(){
+
+    public boolean incomingVisible() {
         return this.incoming.isVisible();
     }
+
     // Set enabled
-    public void setConnected(){
+    public void setConnected() {
         this.btnConnect.setEnabled(false);
-        this.textRemoteAddress.setEnabled(false);
         this.btnDisconnect.setEnabled(true);
         this.textWriteMsg.setEnabled(true);
         this.textHistoryMsg.removeAll();
         this.btnSend.setEnabled(true);
     }
-    public void setDisconnected(){
+
+    public void setDisconnected() {
         this.btnDisconnect.setEnabled(false);
         this.textWriteMsg.setEnabled(false);
         this.textHistoryMsg.setEnabled(false);
@@ -288,102 +294,125 @@ public class GUI extends JFrame {
         this.btnConnect.setEnabled(true);
         this.contsTabs.setEnabled(true);
     }
-    public void setApplied(){
+
+    public void setApplied() {
         this.btnApply.setEnabled(false);
         this.textLocalNick.setEnabled(false);
-        this.textRemoteAddress.setEnabled(true);
         this.btnConnect.setEnabled(true);
         this.contsTabs.setEnabled(true);
+        this.locConts.setEnabled(true);
+        this.allConts.setEnabled(true);
     }
-    public void dialogSetVisible(boolean visible){
+
+    public void dialogSetVisible(boolean visible) {
         this.incoming.setVisible(visible);
     }
 
     // Adding new text to the text area
-    public void appendMsg(String msg){
+    public void appendMsg(String msg) {
         this.textHistoryMsg.add(new Message(this.textRemoteNick.getText(), LocalDateTime.now().toString(),
                 msg, false));
         this.revalidate();
     }
-    public void appendMyMsg(String msg){
+
+    public void appendMyMsg(String msg) {
         this.textHistoryMsg.add(new Message(this.textLocalNick.getText(), LocalDateTime.now().toString(),
                 msg, true));
         this.revalidate();
     }
-    public void appendBroken(String issue){
+
+    public void appendBroken(String issue) {
         this.textHistoryMsg.add(new MessageConState(issue));
         this.revalidate();
     }
 
-    public void cleanHist(){
+    public void cleanHist() {
         this.textHistoryMsg.removeAll();
     }
 
     // Contacs adding
-    public void addServerContact(Contact cont){
+    public void addServerContact(Contact cont) {
         this.allConts.add(cont);
         this.allConts.revalidate();
     }
-    public void addLocalContact(Contact cont){
+
+    public void addLocalContact(Contact cont) {
         this.locConts.add(cont);
         this.locConts.revalidate();
     }
 
     // Listeners
-    public void addSendListener(MouseListener sendListener){
+    public void addSendListener(MouseListener sendListener) {
         this.btnSend.addMouseListener(sendListener);
     }
-    public void addApplyListener(MouseListener applyListener){
+
+    public void addApplyListener(MouseListener applyListener) {
         this.btnApply.addMouseListener(applyListener);
     }
-    public void addConnectListener(MouseListener connectListener){
+
+    public void addConnectListener(MouseListener connectListener) {
         this.btnConnect.addMouseListener(connectListener);
     }
-    public void addDisconnectListener(MouseListener disconListener){
+
+    public void addDisconnectListener(MouseListener disconListener) {
         this.btnDisconnect.addMouseListener(disconListener);
     }
-    public void addMsgKeyListener(KeyListener keyListener){
+
+    public void addMsgKeyListener(KeyListener keyListener) {
         this.textWriteMsg.addKeyListener(keyListener);
     }
-    public void addNickKeyListener(KeyListener keyListener){
+
+    public void addNickKeyListener(KeyListener keyListener) {
         this.textLocalNick.addKeyListener(keyListener);
     }
-    public void addAddrKeyListener(KeyListener keyListener){
+
+    public void addAddrKeyListener(KeyListener keyListener) {
         this.textRemoteAddress.addKeyListener(keyListener);
     }
-    public void addAcceptListener(MouseListener mouseListener){
+
+    public void addAcceptListener(MouseListener mouseListener) {
         this.incoming.acceptAddListener(mouseListener);
     }
-    public void addRejectListener(MouseListener mouseListener){
+
+    public void addRejectListener(MouseListener mouseListener) {
         this.incoming.rejectBtn.addMouseListener(mouseListener);
     }
-    public void addUserAddListener(MouseListener mouseListener){
+
+    public void addUserAddListener(MouseListener mouseListener) {
         this.btnUserAdd.addMouseListener(mouseListener);
     }
 
     // Changing icons from Application class
-    public void setSendIcon(ImageIcon icon){
+    public void setSendIcon(ImageIcon icon) {
         this.btnSend.setIcon(icon);
     }
-    public void setApplyIcon(ImageIcon icon){
+
+    public void setApplyIcon(ImageIcon icon) {
         this.btnApply.setIcon(icon);
     }
-    public void setConnectIcon(ImageIcon icon){
+
+    public void setConnectIcon(ImageIcon icon) {
         this.btnConnect.setIcon(icon);
     }
-    public void setDisconnectIcon(ImageIcon icon){
+
+    public void setDisconnectIcon(ImageIcon icon) {
         this.btnDisconnect.setIcon(icon);
     }
-    public void setAcceptIcon(ImageIcon icon){
+
+    public void setAcceptIcon(ImageIcon icon) {
         this.incoming.setAcIcon(icon);
     }
-    public void setRejectIcon(ImageIcon icon){
+
+    public void setRejectIcon(ImageIcon icon) {
         this.incoming.setRejIcon(icon);
     }
-    public void setUserAddIcon(ImageIcon icon){
-        this.btnUserAdd.setIcon(icon);   }
+
+    public void setUserAddIcon(ImageIcon icon) {
+        this.btnUserAdd.setIcon(icon);
+    }
+
     // Changing location
-    public void setLocations(){
+    public void setLocations() {
         this.leftBar.setBounds(-2, -2, 264, getHeight() - 35);
         this.msgHistScroll.setBounds(311, 20, getWidth() - 376, getHeight() - 120);
         this.textWriteMsg.setBounds(311, getHeight() - 87, msgHistScroll.getWidth() - 60, 30);
@@ -393,22 +422,22 @@ public class GUI extends JFrame {
     }
 
     // Showing incoming request
-    public void incomingCall(String userNick){
+    public void incomingCall(String userNick) {
         incoming = new Incoming(userNick);
     }
 
     // Dialog of incoming call
-    private class Incoming extends JDialog{
+    private class Incoming extends JDialog {
         private JLabel acceptBtn = new JLabel("");
         private JLabel rejectBtn = new JLabel("");
         private JLabel user = new JLabel("");
 
-        public Incoming(String userNick){
+        public Incoming(String userNick) {
             this.setUndecorated(true);
             this.setLayout(null);
             GraphicsEnvironment env =
                     GraphicsEnvironment.getLocalGraphicsEnvironment();
-            this.setBounds(0, (int)(env.getMaximumWindowBounds().getHeight() - 50), 200, 50);
+            this.setBounds(0, (int) (env.getMaximumWindowBounds().getHeight() - 50), 200, 50);
             this.setBackground(Colors.brwn1);
             getContentPane().setBackground(Colors.brwn1);
             acceptBtn.setBounds(120, 9, 32, 32);
@@ -426,22 +455,26 @@ public class GUI extends JFrame {
             this.setAlwaysOnTop(true);
             this.setVisible(true);
         }
-        public void acceptAddListener(MouseListener mouseListener){
+
+        public void acceptAddListener(MouseListener mouseListener) {
             this.acceptBtn.addMouseListener(mouseListener);
         }
-        public void rejectAddListener(MouseListener mouseListener){
+
+        public void rejectAddListener(MouseListener mouseListener) {
             this.rejectBtn.addMouseListener(mouseListener);
         }
-        public void setAcIcon(ImageIcon icon){
+
+        public void setAcIcon(ImageIcon icon) {
             this.acceptBtn.setIcon(icon);
         }
-        public void setRejIcon(ImageIcon icon){
+
+        public void setRejIcon(ImageIcon icon) {
             this.rejectBtn.setIcon(icon);
         }
     }
 
     // Custom ScrollBar
-    private class CustomScrollBar extends MetalScrollBarUI{
+    private class CustomScrollBar extends MetalScrollBarUI {
         private Image imageThumb, imageTrack;
         private JButton b = new JButton() {
 
@@ -479,6 +512,7 @@ public class GUI extends JFrame {
             return b;
         }
     }
+
     private static class DummyImage {
 
         static public Image create(int w, int h, Color c) {
@@ -493,7 +527,7 @@ public class GUI extends JFrame {
     }
 
     // Custom TabbedPane
-    private class CustomTabbedPane extends MetalTabbedPaneUI{
+    private class CustomTabbedPane extends MetalTabbedPaneUI {
         @Override
         protected void paintBottomTabBorder(int tabIndex, Graphics g, int x, int y, int w, int h, int btm, int rght, boolean isSelected) {
         }

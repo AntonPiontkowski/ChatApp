@@ -3,219 +3,218 @@ import java.sql.*;
 import java.util.*;
 
 public class ServerConnection {
-	
-	private String serverAddress;
-	private String localNick;
 
-	private Connection con;
-	private Statement st;
+    private String serverAddress;
+    private String localNick;
 
-	public ServerConnection(){
+    private Connection con;
+    private Statement st;
 
-	}
+    public ServerConnection() {
 
-	public ServerConnection(String address){
-		this(address, null);
-	}
+    }
 
-	public ServerConnection(String address, String nick){
-		if(nick!=null)
-			setLocalNick(nick);
-		if(address!=null){
-			setServerAddress(address);
-			connect();
-		}// if
-	}
+    public ServerConnection(String address) {
+        this(address, null);
+    }
 
-	public void connect(){
-		if(isConnected())
-			return;
-		assert(serverAddress != null && !serverAddress.trim().isEmpty());
-		try {
-			con = DriverManager.getConnection(serverAddress,"guest","guest");
-			st = con.createStatement();
-		} catch (SQLException e) {
-			// TODO throw real error
-			e.printStackTrace();
-		}// catch
-	}
+    public ServerConnection(String address, String nick) {
+        if (nick != null)
+            setLocalNick(nick);
+        if (address != null) {
+            setServerAddress(address);
+            connect();
+        }// if
+    }
 
-	public void disconnect(){
-		if(st!=null){
-			try {
-				st.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			st = null;
-		}
-		if(con!=null){
-			try {
-				con.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			con=null;
-		}// if
-	}
+    public void connect() {
+        if (isConnected())
+            return;
+        assert (serverAddress != null && !serverAddress.trim().isEmpty());
+        try {
+            con = DriverManager.getConnection(serverAddress, "guest", "guest");
+            st = con.createStatement();
+        } catch (SQLException e) {
+            // TODO throw real error
+            e.printStackTrace();
+        }// catch
+    }
 
-	public boolean isConnected(){
-		return st != null;
-	}
+    public void disconnect() {
+        if (st != null) {
+            try {
+                st.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            st = null;
+        }
+        if (con != null) {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            con = null;
+        }// if
+    }
 
-	public String getServerAddress() {
-		return serverAddress;
-	}
+    public boolean isConnected() {
+        return st != null;
+    }
 
-	public void setServerAddress(String serverAddress) {
-		if(serverAddress.equals(this.serverAddress))
-			return;
-		boolean connected = isConnected();
-		if(connected){
-			goOffline();
-			disconnect();
-		}
-		this.serverAddress = serverAddress;
-		if(connected)
-			connect();
-	}
+    public String getServerAddress() {
+        return serverAddress;
+    }
 
-	public String getLocalNick() {
-		return localNick;
-	}
+    public void setServerAddress(String serverAddress) {
+        if (serverAddress.equals(this.serverAddress))
+            return;
+        boolean connected = isConnected();
+        if (connected) {
+            goOffline();
+            disconnect();
+        }
+        this.serverAddress = serverAddress;
+        if (connected)
+            connect();
+    }
 
-	public void setLocalNick(String newNick) {
-		assert newNick!=null;
-		newNick = safe(newNick);
-		if(newNick.equals(this.localNick))
-			return;
+    public String getLocalNick() {
+        return localNick;
+    }
 
-		boolean online = false;
-		if(isConnected()){
-			online = isNickOnline(localNick);
-			if(online)
-				goOffline();
-		}
+    public void setLocalNick(String newNick) {
+        assert newNick != null;
+        newNick = safe(newNick);
+        if (newNick.equals(this.localNick))
+            return;
 
-		this.localNick = newNick;
-		if(online)
-			goOnline();
-	}
+        boolean online = false;
+        if (isConnected()) {
+            online = isNickOnline(localNick);
+            if (online)
+                goOffline();
+        }
 
-	public void goOnline(){
-		goOnline(28411);
-	}
+        this.localNick = newNick;
+        if (online)
+            goOnline();
+    }
 
-	public void goOnline(int port){
-		assert localNick != null;
-		assert isConnected();
-		String q = "INSERT INTO user (nick, ip, online, port) values ('"+localNick+"', SUBSTRING_INDEX(USER(),'@',-1), 1,'"+port+"');";
-		try {
-			st.executeUpdate(q);
-		} catch (SQLException e) {
-			boolean nick_collision=true;
-			try{
-				if(getIpForNick(localNick)!=null){			// if nick collision
-					q = "UPDATE user set ip=SUBSTRING_INDEX(USER(),'@',-1), online=1, port="+port+" WHERE nick='"+localNick+"';";
-					nick_collision = true;
-				}
-				else{										// if address collision
-					q = "UPDATE user set nick='"+localNick+"', online=1 WHERE ip=SUBSTRING_INDEX(USER(),'@',-1) AND port="+port+";";
-					nick_collision = false;
-				}
-				st.executeUpdate(q);
-			}catch(SQLException e2){
-				try {
-					if(nick_collision)
-						st.execute("DELETE FROM user WHERE ip=SUBSTRING_INDEX(USER(),'@',-1) AND port="+port+";");
-					else
-						st.execute("DELETE FROM user WHERE nick='"+localNick+"';");
-					st.execute(q);
-				} catch (SQLException e3) {
-					e2.printStackTrace();
-				}// catch3
-			}// catch2
-		}// catch
-	}// goOnline
+    public void goOnline() {
+        goOnline(28411);
+    }
 
-	public void goOffline(){
-		assert localNick != null;
-		assert isConnected();
-		try {
-			st.execute("INSERT INTO user (nick, ip, online) values ('"+localNick+"', SUBSTRING_INDEX(USER(),'@',-1), 0) ON DUPLICATE KEY UPDATE ip=VALUES(ip), online=VALUES(online);");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}// catch
-	}
+    public void goOnline(int port) {
+        assert localNick != null;
+        assert isConnected();
+        String q = "INSERT INTO user (nick, ip, online, port) values ('" + localNick + "', SUBSTRING_INDEX(USER(),'@',-1), 1,'" + port + "');";
+        try {
+            st.executeUpdate(q);
+        } catch (SQLException e) {
+            boolean nick_collision = true;
+            try {
+                if (getIpForNick(localNick) != null) {            // if nick collision
+                    q = "UPDATE user set ip=SUBSTRING_INDEX(USER(),'@',-1), online=1, port=" + port + " WHERE nick='" + localNick + "';";
+                    nick_collision = true;
+                } else {                                        // if address collision
+                    q = "UPDATE user set nick='" + localNick + "', online=1 WHERE ip=SUBSTRING_INDEX(USER(),'@',-1) AND port=" + port + ";";
+                    nick_collision = false;
+                }
+                st.executeUpdate(q);
+            } catch (SQLException e2) {
+                try {
+                    if (nick_collision)
+                        st.execute("DELETE FROM user WHERE ip=SUBSTRING_INDEX(USER(),'@',-1) AND port=" + port + ";");
+                    else
+                        st.execute("DELETE FROM user WHERE nick='" + localNick + "';");
+                    st.execute(q);
+                } catch (SQLException e3) {
+                    e2.printStackTrace();
+                }// catch3
+            }// catch2
+        }// catch
+    }// goOnline
 
-	public String getIpForNick(String nick){
-		assert isConnected();
-		assert nick!=null;
-		nick = safe(nick);
-		ResultSet rs;
-		try {
-			rs = st.executeQuery("SELECT ip FROM user WHERE nick='"+nick+"'");
-			if(!rs.next())
-				return null;
-			return rs.getString(1);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}// catch
-		return null;
-	}
+    public void goOffline() {
+        assert localNick != null;
+        assert isConnected();
+        try {
+            st.execute("INSERT INTO user (nick, ip, online) values ('" + localNick + "', SUBSTRING_INDEX(USER(),'@',-1), 0) ON DUPLICATE KEY UPDATE ip=VALUES(ip), online=VALUES(online);");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }// catch
+    }
 
-	public int getPortForNick(String nick){
-		assert isConnected();
-		assert nick!=null;
-		nick = safe(nick);
-		ResultSet rs;
-		try {
-			rs = st.executeQuery("SELECT port FROM user WHERE nick='"+nick+"'");
-			if(!rs.next())
-				return 0;
-			return rs.getInt(1);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}// catch
-		return 0;
-	}
+    public String getIpForNick(String nick) {
+        assert isConnected();
+        assert nick != null;
+        nick = safe(nick);
+        ResultSet rs;
+        try {
+            rs = st.executeQuery("SELECT ip FROM user WHERE nick='" + nick + "'");
+            if (!rs.next())
+                return null;
+            return rs.getString(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }// catch
+        return null;
+    }
 
-	public boolean isNickOnline(String nick){
-		if(nick==null)
-			return false;
+    public int getPortForNick(String nick) {
+        assert isConnected();
+        assert nick != null;
+        nick = safe(nick);
+        ResultSet rs;
+        try {
+            rs = st.executeQuery("SELECT port FROM user WHERE nick='" + nick + "'");
+            if (!rs.next())
+                return 0;
+            return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }// catch
+        return 0;
+    }
 
-		assert isConnected();
-		nick = safe(nick);
-		ResultSet rs;
-		try {
-			rs = st.executeQuery("SELECT online FROM user WHERE nick='"+nick+"'");
-			if(!rs.next())
-				return false;
-			return rs.getBoolean(1);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}// catch
-		return false;
-	}
+    public boolean isNickOnline(String nick) {
+        if (nick == null)
+            return false;
 
-	public String[] getAllNicks(){
-		assert isConnected();
-		ResultSet rs;
-		List<String> res = new ArrayList<String>();
-		try {
-			rs = st.executeQuery("SELECT nick FROM user;");
-			while(rs.next()){
-				String nick = rs.getString(1);
-				res.add(nick);
-			}// while
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}// catch
-		return res.toArray(new String[0]);
-	}
+        assert isConnected();
+        nick = safe(nick);
+        ResultSet rs;
+        try {
+            rs = st.executeQuery("SELECT online FROM user WHERE nick='" + nick + "'");
+            if (!rs.next())
+                return false;
+            return rs.getBoolean(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }// catch
+        return false;
+    }
 
-	private static String safe(String s){
-		return s.replaceAll("['\";]", "").replaceAll("\\s", "");
-	}
+    public String[] getAllNicks() {
+        assert isConnected();
+        ResultSet rs;
+        List<String> res = new ArrayList<String>();
+        try {
+            rs = st.executeQuery("SELECT nick FROM user;");
+            while (rs.next()) {
+                String nick = rs.getString(1);
+                res.add(nick);
+            }// while
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }// catch
+        return res.toArray(new String[0]);
+    }
+
+    private static String safe(String s) {
+        return s.replaceAll("['\";]", "").replaceAll("\\s", "");
+    }
 
 }
