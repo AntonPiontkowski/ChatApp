@@ -245,7 +245,7 @@ public class Application {
         public void mouseClicked(MouseEvent e) {
             if (frame.conIsEnabled()) {
                 // TODO CONNECTING
-                if (frame.getRemoteAddress().length() > 3) {
+                if (frame.getRemoteAddress().length() > Constants.NICK_LENGTH_MIN) {
                     caller.setRemoteAddress(new InetSocketAddress(frame.getRemoteAddress(), Constants.PORT));
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
@@ -333,7 +333,7 @@ public class Application {
         public void mouseClicked(MouseEvent e) {
             if (frame.applyIsEnabled()) {
                 // TODO CREATING Caller, STARTING CallListenerThread
-                if (frame.getLocalNick().length() > 3) {
+                if (frame.getLocalNick().length() > Constants.NICK_LENGTH_MIN) {
                     try {
                         if (frame.getLocalNick().charAt(0) != ' ') {
                             caller = new Caller(frame.getLocalNick());

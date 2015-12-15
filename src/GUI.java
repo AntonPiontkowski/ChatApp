@@ -41,7 +41,6 @@ public class GUI extends JFrame {
 
     private JTabbedPane contsTabs = new JTabbedPane();
 
-
     private Incoming incoming;
 
     private Font segoeRegFont;    // ..Reg = Regular

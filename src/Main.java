@@ -4,11 +4,10 @@ import java.sql.DriverManager;
 import java.util.Enumeration;
 
 public class Main {
-    public static void main(String[] args){
-        try{
+    public static void main(String[] args) {
+        try {
             Class.forName("com.mysql.jdbc.Driver");
-        }
-        catch(ClassNotFoundException e){
+        } catch (ClassNotFoundException e) {
             System.out.println(e);
         }
         SwingUtilities.invokeLater(new Runnable() {
