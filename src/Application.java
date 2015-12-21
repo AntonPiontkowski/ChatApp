@@ -23,12 +23,13 @@ public class Application {
     private CallListenerThread callListenerThread;
     private CommandListenerThread commandListenerThread;
     private GUI frame;
+    private FileManager fileManager;
 
     public Application(GUI frame) {
         this.frame = frame;
         this.frame.addWindowStateListener(new StateListener());
         this.frame.addWindowListener(new FrameListener());
-        this.frame.addSendListener(new SendListener());
+        this.frame.addSendFileListener(new SendFileListener());
         this.frame.addApplyListener(new BtnApplyListener());
         this.frame.addConnectListener(new BtnConListener());
         this.frame.addDisconnectListener(new BtnDisconListener());
@@ -184,56 +185,57 @@ public class Application {
         }
     }
 
-    private class SendListener implements MouseListener {
+
+    private class SendFileListener implements MouseListener {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (frame.sendIsEnabled()) {
-                sending();
-            } else
-                Sounds.DISABLED.play();
+            if (frame.sendFileIsEnabled()) {
+                fileManager = new FileManager();
+                fileManager.setFile();
+            }
         }
 
         @Override
         public void mousePressed(MouseEvent e) {
-            if (frame.sendIsEnabled())
+            if (frame.sendFileIsEnabled())
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setSendIcon(new ImageIcon(getClass().getResource("gui/frame/sendPrs.png")));
+                        frame.setSendFileIcon(new ImageIcon(getClass().getResource("gui/frame/sendPrs.png")));
                     }
                 });
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            if (frame.sendIsEnabled())
+            if (frame.sendFileIsEnabled())
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setSendIcon(new ImageIcon(getClass().getResource("gui/frame/sendEnt.png")));
+                        frame.setSendFileIcon(new ImageIcon(getClass().getResource("gui/frame/sendEnt.png")));
                     }
                 });
         }
 
         @Override
         public void mouseEntered(MouseEvent e) {
-            if (frame.sendIsEnabled())
+            if (frame.sendFileIsEnabled())
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setSendIcon(new ImageIcon(getClass().getResource("gui/frame/sendEnt.png")));
+                        frame.setSendFileIcon(new ImageIcon(getClass().getResource("gui/frame/sendEnt.png")));
                     }
                 });
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
-            if (frame.sendIsEnabled())
+            if (frame.sendFileIsEnabled())
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        frame.setSendIcon(new ImageIcon(getClass().getResource("gui/frame/sendIcon.png")));
+                        frame.setSendFileIcon(new ImageIcon(getClass().getResource("gui/frame/sendIcon.png")));
                     }
                 });
         }
@@ -388,15 +390,18 @@ public class Application {
 
                             ContactsFile.checkFile();
                             locConts = ContactsFile.readFile(server);
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    for (int i = 0; i < locConts.size(); i++) {
-                                        frame.addLocalContact(locConts.get(i));
-                                        locConts.get(i).addMouseListener(new ContactListener());
+                            if (locConts != null) {
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        for (int i = 0; i < locConts.size(); i++) {
+                                            frame.addLocalContact(locConts.get(i));
+                                            locConts.get(i).addMouseListener(new ContactListener());
+                                        }
                                     }
-                                }
-                            });
+
+                                });
+                            }
                         } else {
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override

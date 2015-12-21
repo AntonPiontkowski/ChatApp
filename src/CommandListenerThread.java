@@ -77,21 +77,26 @@ public class CommandListenerThread extends Observable implements Runnable {
                     setChanged();
                     notifyObservers();
                     clearChanged();
-                } else if (command.substring(0, 7).equals("ChatApp")) {
-                    String[] info = Checker.getInfo(command);
-                    if (info != null) {
-                        if (info.length == 2) {
-                            this.lastCommand = new NickCommand(false, info[0], info[1]);
-                            setChanged();
-                            notifyObservers();
-                            clearChanged();
+                } else if (command.equals("File")) {
+
+
+                } else {
+                    if (command.substring(0, 7).equals("ChatApp")) {
+                        String[] info = Checker.getInfo(command);
+                        if (info != null) {
+                            if (info.length == 2) {
+                                this.lastCommand = new NickCommand(false, info[0], info[1]);
+                                setChanged();
+                                notifyObservers();
+                                clearChanged();
+                            } else {
+                                this.lastCommand = new NickCommand(true, info[0], info[1]);
+                            }
                         } else {
-                            this.lastCommand = new NickCommand(true, info[0], info[1]);
+                            connection.send(Command.CommandType.REJECT.toString());
                         }
-                    } else {
-                        connection.send(Command.CommandType.REJECT.toString());
-                    }
-                } else connection.send(Command.CommandType.REJECT.toString());
+                    } else connection.send(Command.CommandType.REJECT.toString());
+                }
             } else {
                 this.lastCommand = null;
                 setChanged();

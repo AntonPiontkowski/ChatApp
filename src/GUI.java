@@ -28,7 +28,7 @@ public class GUI extends JFrame {
     private JLabel remoteAddress = new JLabel("Addr");
     private JLabel remoteNick = new JLabel("Nick");
 
-    private JLabel btnSend = new JLabel("");
+    private JLabel btnSendFile = new JLabel("");
     private JLabel btnApply = new JLabel("");
     private JLabel btnConnect = new JLabel("");
     private JLabel btnDisconnect = new JLabel("");
@@ -195,13 +195,13 @@ public class GUI extends JFrame {
         textWriteMsg.setForeground(Colors.gray2);
         textWriteMsg.setBackground(Colors.dark3);
         textWriteMsg.setBorder(BorderFactory.createLineBorder(Colors.dark3, 2));
-        btnSend.setIcon(new ImageIcon(getClass().getResource("gui/frame/sendIcon.png")));
-        btnSend.setDisabledIcon(new ImageIcon(getClass().getResource("gui/frame/sendDsbl.png")));
+        btnSendFile.setIcon(new ImageIcon(getClass().getResource("gui/frame/sendIcon.png")));
+        btnSendFile.setDisabledIcon(new ImageIcon(getClass().getResource("gui/frame/sendDsbl.png")));
         this.add(msgHistScroll);
         this.add(textWriteMsg);
-        this.add(btnSend);
+        this.add(btnSendFile);
         textWriteMsg.setEnabled(false);
-        btnSend.setEnabled(false);
+        btnSendFile.setEnabled(false);
         textHistoryMsg.setEnabled(false);
 
 
@@ -249,8 +249,8 @@ public class GUI extends JFrame {
     }
 
     // Check enabled
-    public boolean sendIsEnabled() {
-        return this.btnSend.isEnabled();
+    public boolean sendFileIsEnabled() {
+        return this.btnSendFile.isEnabled();
     }
 
     public boolean applyIsEnabled() {
@@ -279,14 +279,15 @@ public class GUI extends JFrame {
         this.btnDisconnect.setEnabled(true);
         this.textWriteMsg.setEnabled(true);
         this.textHistoryMsg.removeAll();
-        this.btnSend.setEnabled(true);
+        this.btnSendFile.setEnabled(true);
     }
 
     public void setDisconnected() {
         this.btnDisconnect.setEnabled(false);
         this.textWriteMsg.setEnabled(false);
         this.textHistoryMsg.setEnabled(false);
-        this.btnSend.setEnabled(false);
+        this.btnSendFile.setEnabled(false);
+
         this.textRemoteAddress.setEnabled(true);
         this.textRemoteAddress.setText("");
         this.textRemoteNick.setText("");
@@ -341,9 +342,10 @@ public class GUI extends JFrame {
     }
 
     // Listeners
-    public void addSendListener(MouseListener sendListener) {
-        this.btnSend.addMouseListener(sendListener);
+    public void addSendFileListener(MouseListener sendFileListener) {
+        this.btnSendFile.addMouseListener(sendFileListener);
     }
+
 
     public void addApplyListener(MouseListener applyListener) {
         this.btnApply.addMouseListener(applyListener);
@@ -382,9 +384,10 @@ public class GUI extends JFrame {
     }
 
     // Changing icons from Application class
-    public void setSendIcon(ImageIcon icon) {
-        this.btnSend.setIcon(icon);
+    public void setSendFileIcon(ImageIcon icon) {
+        this.btnSendFile.setIcon(icon);
     }
+
 
     public void setApplyIcon(ImageIcon icon) {
         this.btnApply.setIcon(icon);
@@ -415,7 +418,8 @@ public class GUI extends JFrame {
         this.leftBar.setBounds(-2, -2, 264, getHeight() - 35);
         this.msgHistScroll.setBounds(311, 20, getWidth() - 376, getHeight() - 120);
         this.textWriteMsg.setBounds(311, getHeight() - 87, msgHistScroll.getWidth() - 60, 30);
-        this.btnSend.setBounds(textWriteMsg.getX() + textWriteMsg.getWidth(), textWriteMsg.getY(), 60, 30);
+        this.btnSendFile.setBounds(textWriteMsg.getX() + textWriteMsg.getWidth(), textWriteMsg.getY(), 60, 30);
+        /////////////////////////////////////////////
         this.contsTabs.setBounds(30, 350, 200, leftBar.getY() + leftBar.getHeight() - 358);
         this.validate();
     }
