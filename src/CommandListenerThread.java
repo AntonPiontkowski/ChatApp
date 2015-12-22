@@ -78,8 +78,11 @@ public class CommandListenerThread extends Observable implements Runnable {
                     notifyObservers();
                     clearChanged();
                 } else if (command.equals("File")) {
-
-
+                    this.lastCommand = new FileCommand();
+                    ((FileCommand) this.lastCommand).setFile(connection.receiveFile());
+                    setChanged();
+                    notifyObservers();
+                    clearChanged();
                 } else {
                     if (command.substring(0, 7).equals("ChatApp")) {
                         String[] info = Checker.getInfo(command);

@@ -23,7 +23,6 @@ public class Application {
     private CallListenerThread callListenerThread;
     private CommandListenerThread commandListenerThread;
     private GUI frame;
-    private FileManager fileManager;
 
     public Application(GUI frame) {
         this.frame = frame;
@@ -78,6 +77,14 @@ public class Application {
                             @Override
                             public void run() {
                                 frame.appendMsg(((MessageCommand) commandListenerThread.getLastCommand()).getMessage());
+                            }
+                        });
+                    } else if (commandListenerThread.getLastCommand() instanceof FileCommand) {
+                        Sounds.RECEIVE.play();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                frame.appendMsg(((FileCommand) commandListenerThread.getLastCommand()).getFile());
                             }
                         });
                     } else if (Checker.getType(commandListenerThread.getLastCommand().getType().toString()) != null) {
@@ -191,8 +198,14 @@ public class Application {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (frame.sendFileIsEnabled()) {
-                fileManager = new FileManager();
-                fileManager.setFile();
+                connection.setFiles();
+//                Socket s = null;
+//                try {
+//                    s = new Socket(InetAddress.getByName(connection.getSocketAddress().toString()),Constants.FILE_PORT);
+//                } catch (IOException e1) {
+//                    e1.printStackTrace();
+//                }
+                connection.sendFiles();
             }
         }
 
