@@ -84,7 +84,7 @@ public class Application {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                frame.appendMsg(((FileCommand) commandListenerThread.getLastCommand()).getFile());
+                                frame.appendMsg("Received file");
                             }
                         });
                     } else if (Checker.getType(commandListenerThread.getLastCommand().getType().toString()) != null) {
@@ -198,14 +198,15 @@ public class Application {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (frame.sendFileIsEnabled()) {
-                connection.setFiles();
-//                Socket s = null;
-//                try {
-//                    s = new Socket(InetAddress.getByName(connection.getSocketAddress().toString()),Constants.FILE_PORT);
-//                } catch (IOException e1) {
-//                    e1.printStackTrace();
-//                }
-                connection.sendFiles();
+                frame.setMsg("Sending file...");
+                frame.getTextWriteMsg().setEnabled(false);
+                if (connection.sendFiles()) {
+                    frame.setMsg("");
+                    frame.getTextWriteMsg().setEnabled(true);
+                    frame.appendMsg("File sent!");
+                }else {
+                    frame.appendMsg("File not sent!");
+                }
             }
         }
 
@@ -385,10 +386,10 @@ public class Application {
                             in.close();
 
 
-                            server = new ServerConnection("jdbc:mysql://files.litvinov.in.ua/chatapp_server?" +
-                                    "characterEncoding=utf-8&useUnicode=true", frame.getLocalNick());
-                            server.connect();
-                            server.goOnline();
+                            // server = new ServerConnection("jdbc:mysql://files.litvinov.in.ua/chatapp_server?" +
+                            //       "characterEncoding=utf-8&useUnicode=true", frame.getLocalNick());
+                            //server.connect();
+                            //server.goOnline();
                             allConts = ContactsServer.readServer(server, frame.getLocalNick());
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override

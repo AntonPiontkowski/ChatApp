@@ -1,18 +1,15 @@
+
 public class FileCommand extends Command {
-    private String fileName;
+    private boolean isReceived;
 
     public FileCommand() {
     }
 
-    public FileCommand(String file) {
-        this.fileName = file;
+    public boolean isReceived() {
+        return isReceived;
     }
 
-    public void setFile(String message) {
-        this.fileName = message;
-    }
-
-    public String getFile() {
-        return this.fileName;
+    public void setReceived(boolean isReceived) {
+        this.isReceived = isReceived;
     }
 }

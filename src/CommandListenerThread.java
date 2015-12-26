@@ -79,7 +79,7 @@ public class CommandListenerThread extends Observable implements Runnable {
                     clearChanged();
                 } else if (command.equals("File")) {
                     this.lastCommand = new FileCommand();
-                    ((FileCommand) this.lastCommand).setFile(connection.receiveFile());
+                    ((FileCommand) this.lastCommand).setReceived(connection.receiveFile());
                     setChanged();
                     notifyObservers();
                     clearChanged();

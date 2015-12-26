@@ -1,23 +1,17 @@
 import javax.swing.*;
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.util.ArrayList;
+import java.net.*;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /*
-
 CLASS THAT IS USED FOR ALL DATA SENDING AND RECEIVING OPERATIONS
-
  */
 
 public class Connection {
     private PrintWriter printer;
     private Scanner scanner;
     private Socket socket;
-    private String fileName;
 
     public Connection(Socket socket) {
         try {
@@ -70,82 +64,82 @@ public class Connection {
         return this.socket.getRemoteSocketAddress();
     }
 
-    public void setFiles() {
-        JFileChooser fileopen = new JFileChooser();
-        int ret = fileopen.showDialog(null, "Open File");
-        if (ret == JFileChooser.APPROVE_OPTION) {
-            this.fileName = fileopen.getSelectedFile().toString();
-        }
-    }
-
-    public void sendFiles() {
-        System.out.println("Sending");
-        this.printer.print("File" + "\n");
-        this.printer.flush();
-        DataOutputStream outD;
-        try {
-            outD = new DataOutputStream(socket.getOutputStream());
-
-            File f = new File(fileName);
-
-            outD.writeLong(f.length());// отсылаем размер файла
-            outD.writeUTF(f.getName());// отсылаем имя файла
-
-            FileInputStream in = new FileInputStream(f);
-            byte[] buffer = new byte[64 * 1024];
-            int count;
-
-            while ((count = in.read(buffer)) != -1) {
-                outD.write(buffer, 0, count);
-            }
-            outD.flush();
-            in.close();
-           // socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Sended");
-    }
-
-    public String receiveFile() {
-        System.out.println("Try");
-        try {
-            ServerSocket ss = new ServerSocket(Constants.FILE_PORT);
-
-            while (true) {
-                Socket s = ss.accept();
-
-                java.io.InputStream in = s.getInputStream();
-                DataInputStream din = new DataInputStream(in);
-
-                long fileSize = din.readLong(); // получаем размер файла
-
-                String fileName = din.readUTF(); // прием имени файла
-//                System.out.println("Имя файла: " + fileName + "\n");
-//                System.out.println("Размер файла: " + fileSize + " байт\n");
-
-                byte[] buffer = new byte[64 * 1024];
-                FileOutputStream outF = new FileOutputStream(fileName);
-                int count, total = 0;
-
-                while ((count = din.read(buffer)) != -1) {
-                    total += count;
-                    outF.write(buffer, 0, count);
-
-                    if (total == fileSize) {
-                        break;
+    //Sending file
+    public boolean sendFiles() {
+        boolean isSent = false;
+        JFileChooser fileChooser = new JFileChooser();
+        int openedFile = fileChooser.showOpenDialog(null);
+        if (openedFile == JFileChooser.APPROVE_OPTION) {
+            File sendFile = fileChooser.getSelectedFile();
+            this.printer.print("File" + "\n");
+            this.printer.flush();
+            this.printer.print(sendFile.getName() + "\n");
+            this.printer.flush();
+            try (ServerSocket ss = new ServerSocket(Constants.FILE_PORT)) {
+                Socket fileSocket = ss.accept();
+                Scanner scanner1 = new Scanner(fileSocket.getInputStream());
+                String checkFile = scanner1.nextLine();
+                if (checkFile.equals(sendFile.getName())) {
+                    try {
+                        DataOutputStream dos = new DataOutputStream(fileSocket.getOutputStream());
+                        FileInputStream fis = new FileInputStream(sendFile);
+                        byte[] bytes = new byte[64 * 1024];
+                        int size;
+                        while ((size = fis.read(bytes)) != -1) {
+                            dos.write(bytes, 0, size);
+                            dos.flush();
+                        }
+                        dos.close();
+                        fis.close();
+                        isSent = true;
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
                     }
+                    fileSocket.close();
+                    ss.close();
+                } else {
+                    fileSocket.close();
+                    ss.close();
                 }
-                outF.flush();
-                outF.close();
-//                System.out.println("Файл принят\n---------------------------------\n");
-
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return fileName;
+        return isSent;
     }
 
+    //Receiving command,file
+    public boolean receiveFile() {
+        boolean isReceived = false;
+        String fileName = scanner.nextLine();
+        JFileChooser fileChooser = new JFileChooser();
+        if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+            String[] SocketAddress = String.valueOf(socket.getRemoteSocketAddress()).split("/");
+            try (Socket socket1 = new Socket(SocketAddress[1].split(":")[0], Constants.FILE_PORT)) {
+                PrintWriter printWriter = new PrintWriter(socket1.getOutputStream());
+                printWriter.print(fileName + "\n");
+                printWriter.flush();
+                try {
+                    DataInputStream dis = new DataInputStream(socket1.getInputStream());
+                    FileOutputStream fos = new FileOutputStream(fileChooser.getSelectedFile());
+                    byte[] bytes = new byte[64 * 1024];
+                    int size;
+                    while ((size = dis.read(bytes)) != -1) {
+                        fos.write(bytes, 0, size);
+                        fos.flush();
+                    }
+                    dis.close();
+                    fos.close();
+                    socket1.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            } catch (UnknownHostException e1) {
+                e1.printStackTrace();
+            } catch (IOException e2) {
+                e2.printStackTrace();
+            }
+        }
+        return isReceived;
+    }
 }

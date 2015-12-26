@@ -424,6 +424,10 @@ public class GUI extends JFrame {
         this.validate();
     }
 
+    public JTextField getTextWriteMsg(){
+        return this.textWriteMsg;
+    }
+
     // Showing incoming request
     public void incomingCall(String userNick) {
         incoming = new Incoming(userNick);
